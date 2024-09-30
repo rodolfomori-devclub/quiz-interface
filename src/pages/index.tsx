@@ -1,24 +1,32 @@
 import { Header } from "../components/Header"
+import { Footer } from "../components/Footer"
 
 import mainBannerImg from '../assets/banner-min.png'
 
 import { IoMdArrowDropright } from "react-icons/io"
 import { useNavigate } from "react-router-dom"
 
+import { useState } from "react"
+
 function Home() {
+  const [isChecked, setIsChecked] = useState(false)
   const navigate = useNavigate()
 
   const handleNavigate = (): void => {
-    navigate('/preencher')
+    if (isChecked) {
+      navigate('/preencher')
+    } else {
+      alert('Você precisa concordar com os termos para continuar.')
+    }
   }
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full min-h-screen">
       <Header />
 
       <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover mt-2" />
 
-      <section className="w-full p-4 mt-2">
+      <section className="w-full p-4 mt-2 flex-grow">
         <h3 className="text-blue-500 font-semibold text-lg">QUIZ do Desafio da Gestão de Tráfego</h3>
 
         <p className="text-zinc-600 mt-2">Seja muito bem-vindo(a) ao <b>QUIZ DO DESAFIO DA GESTÃO DE TRÁFEGO</b></p>
@@ -125,18 +133,32 @@ function Home() {
             Os participantes declaram expressamente ter lido e estarem de acordo com o presente regulamento e suas condições.</p>
 
           <hr className="opacity-60 mt-4" />
-
           <div className="flex items-center gap-2 mt-4">
-            <input type="checkbox" />
-            <p className="text-zinc-600 text-sm">Declaro ter lido e estar de acordo com o presente regulamento e suas condições.</p>
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={(e) => setIsChecked(e.target.checked)}
+            />
+            <p className="text-zinc-600 text-sm">
+              Declaro ter lido e estar de acordo com o presente regulamento e suas condições.
+            </p>
           </div>
 
-          <button onClick={handleNavigate} className="text-white bg-blue-500 h-12 rounded-sm shadow-sm w-full mt-4" type="button">Prosseguir</button>
+          <button
+            onClick={handleNavigate}
+            className={`text-white bg-blue-500 h-12 rounded-sm shadow-sm w-full mt-4 ${!isChecked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+              }`}
+            type="button"
+            disabled={!isChecked}
+          >
+            Prosseguir
+          </button>
         </div>
       </section>
+
+      <Footer />
     </div>
   )
-
 }
 
 export default Home

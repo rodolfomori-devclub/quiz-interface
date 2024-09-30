@@ -1,3 +1,4 @@
+import { Footer } from "../../../components/Footer"
 import { PrivateHeader } from "../../../components/PrivateHeader"
 
 import mainBannerImg from "../../../assets/banner-min.png"
@@ -378,13 +379,14 @@ export function Quiz() {
   }
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full min-h-screen">
       <PrivateHeader />
+
       <div className="w-full h-full bg-gray-100 p-4">
 
         <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover mt-2 mb-4" />
 
-        <form onSubmit={handleSubmit} className="space-y-8 pb-4">
+        <form onSubmit={handleSubmit} className="space-y-8 pb-4 flex-grow">
           {quiz.map((question) => (
             <div key={question.id} className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-base font-bold mb-4">{question.question}</h2>
@@ -419,6 +421,8 @@ export function Quiz() {
           </button>
         </form>
       </div>
+
+      <Footer />
     </div>
   )
 }

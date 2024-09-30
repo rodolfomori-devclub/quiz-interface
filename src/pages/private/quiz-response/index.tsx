@@ -1,15 +1,15 @@
-import { PrivateHeader } from "../../../components/PrivateHeader";
+import { Footer } from "../../../components/Footer"
+import { PrivateHeader } from "../../../components/PrivateHeader"
 
 import mainBannerImg from "../../../assets/banner-min.png"
 
 export function QuizResponse() {
   return (
-    <div className="w-full h-screen">
+    <div className="w-full min-h-screen flex flex-col">
       <PrivateHeader />
 
       <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover mt-2" />
-      <div className="w-full p-4">
-
+      <div className="w-full p-4 flex-grow">
         <div id="result-info" className="w-full mt-4">
           <h4 className="text-sm text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao quiz do Desafio Devclub!</h4>
 
@@ -35,6 +35,8 @@ export function QuizResponse() {
           </ul>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }
