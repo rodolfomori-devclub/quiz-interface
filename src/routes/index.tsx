@@ -1,9 +1,12 @@
 import { BrowserRouter } from 'react-router-dom'
-import { AuthRoutes } from './auth.routes'
+
+import { useUser } from '../hooks/user'
+
+import { AppRoutes } from './user/app.routes'
+import { AuthRoutes } from './user/auth.routes'
 
 export function Routes() {
-  // const adminToken = ''
-  // const userToken = 'some-user-token'
+  const { userData } = useUser()
 
-  return <BrowserRouter><AuthRoutes /></BrowserRouter>
+  return <BrowserRouter>{userData?.token ? <AppRoutes /> : <AuthRoutes />}</BrowserRouter>
 }

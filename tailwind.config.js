@@ -9,6 +9,21 @@ export default {
           25: '#FCFAFF',
         },
 
+        violet: {
+          25: '#FCFAFF',
+          50: '#F5F3FF',
+          100: '#EDE9FE',
+          200: '#DDD6FE',
+          300: '#C4B5FD',
+          400: '#A78BFA',
+          500: '#8B5CF6',
+          600: '#7C3AED',
+          700: '#6D28D9',
+          800: '#5B21B6',
+          900: '#4C1D95',
+          950: '#2E1065',
+        },
+
         blue: {
           25: '#F2FAFD',
           50: '#E5F4FB',
@@ -43,9 +58,10 @@ export default {
         'max-xl': { max: '1280px' },
         'max-2xl': { max: '1536px' },
         'max-3xl': { max: '1700px' },
-        'min-xl': { min: '1280px' },
-        'min-lg': { min: '1080px' },
+        'min-xs': { min: '560px' },
         'min-md': { min: '767px' },
+        'min-lg': { min: '1080px' },
+        'min-xl': { min: '1280px' },
       },
       fontFamily: {
         sans: ['Montserrat', 'sans-serif'],
@@ -53,6 +69,9 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      animation: {
+        'bounce-slow': 'bounce 1s infinite ease-in-out',
       },
     },
   },
