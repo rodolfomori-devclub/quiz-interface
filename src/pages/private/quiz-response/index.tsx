@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react"
-
 import { Footer } from "../../../components/Footer"
 import { PrivateHeader } from "../../../components/PrivateHeader"
 
@@ -9,15 +7,6 @@ import { useUser } from "../../../hooks/user"
 
 export function QuizResponse() {
   const { userFinalGrade } = useUser()
-
-  const [showAnimate, setShowAnimate] = useState<boolean>(false)
-
-  useEffect(() => {
-    setShowAnimate(true)
-    setTimeout(() => {
-      setShowAnimate(false)
-    }, 2000)
-  }, [])
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -33,7 +22,7 @@ export function QuizResponse() {
 
           <div className="flex items-center gap-2 justify-center mt-4">
             <p className="text-zinc-600 text-sm min-md:text-base">Pontuação</p>
-            <div className={`rounded-md bg-violet-500 text-white p-3 shadow-md ${showAnimate && 'animate-bounce-slow'}`}>
+            <div className="rounded-md bg-violet-500 text-white p-3 shadow-md">
               {userFinalGrade}/10
             </div>
           </div>

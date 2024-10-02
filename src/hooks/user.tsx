@@ -1,17 +1,27 @@
 import React, { ReactNode, createContext, useContext, useState, useEffect } from 'react'
 
-import { quizUserAPI } from '../services/api'
+import { quizAdminAPI, quizUserAPI } from '../services/api'
 
 export type AdminRole = 'master-admin' | 'default-admin'
 
-interface User {
+export interface User {
   id?: string
   name?: string
   email?: string
+  phone?: string
+  document?: string
   alreadyFilledQuiz?: boolean | null
   finalGrade?: number | null
+  birthDate?: string | Date
+  doLiveAbroad?: boolean
   createdAt?: Date | null
   updatedAt?: Date | null
+}
+
+interface Admin {
+  id?: string
+  name?: string
+  email?: string
 }
 
 interface AuthContextData {
@@ -19,6 +29,8 @@ interface AuthContextData {
   setUserData: React.Dispatch<React.SetStateAction<UserAuthAccess>>
   userFinalGrade: number | null
   setUserFinalGrade: React.Dispatch<React.SetStateAction<number | null>>
+  adminData: AdminAuthAcess
+  setAdminData: React.Dispatch<React.SetStateAction<AdminAuthAcess>>
 }
 
 interface AuthProviderProps {
@@ -30,11 +42,21 @@ interface UserAuthAccess {
   token: string
 }
 
+interface AdminAuthAcess {
+  admin: Admin
+  token: string
+}
+
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 function UserProvider({ children }: AuthProviderProps) {
   const [userData, setUserData] = useState<UserAuthAccess>({
     user: {},
+    token: '',
+  })
+
+  const [adminData, setAdminData] = useState<AdminAuthAcess>({
+    admin: {},
     token: '',
   })
 
@@ -53,6 +75,18 @@ function UserProvider({ children }: AuthProviderProps) {
     }
   }, [])
 
+  useEffect(() => {
+    const adminToken = localStorage.getItem('@quiz-devclub-v1:adminAccessToken')
+    const admin = localStorage.getItem('@quiz-devclub-v1:admin')
+
+    if (adminToken && admin) {
+      quizAdminAPI.defaults.headers.common['Authorization'] = `Bearer ${adminToken}`
+      setAdminData({
+        admin: JSON.parse(admin),
+        token: adminToken,
+      })
+    }
+  }, [])
 
   return (
     <AuthContext.Provider
@@ -61,6 +95,8 @@ function UserProvider({ children }: AuthProviderProps) {
         setUserData,
         userFinalGrade,
         setUserFinalGrade,
+        adminData,
+        setAdminData,
       }}
     >
       {children}
