@@ -250,7 +250,7 @@ export function Form() {
           <button
             id="submit-user-data"
             type="submit"
-            className="text-white bg-violet-500 h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm"
+            className="text-white bg-violet-500 h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm hover:opacity-90 hover:transition-all"
             disabled={loadingSubmit}
           >
             {loadingSubmit ? 'Enviando...' : 'Acessar o Quiz'}

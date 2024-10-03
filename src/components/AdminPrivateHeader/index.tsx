@@ -4,7 +4,7 @@ import { useUser } from "../../hooks/user"
 import { quizAdminAPI } from "../../services/api"
 
 export const AdminPrivateHeader = () => {
-  const { adminData, setAdminData } = useUser()
+  const { setAdminData } = useUser()
   const navigate = useNavigate()
 
   const handleSignOut = (): void => {
@@ -31,13 +31,9 @@ export const AdminPrivateHeader = () => {
         <h1 className="font-semibold uppercase tracking-[0.2rem] text-2xl text-center"><b className="text-slate-900">Gestão de Tráfego</b></h1>
       </div>
 
-      <div className="w-full flex items-center justify-between px-6">
-        <span>
-          <i className="text-sm">{adminData?.admin?.email}</i>
-        </span>
-
-        <span>
-          <button onClick={() => handleSignOut()} type="button" className="uppercase text-zinc-600 text-sm font-semibold hover:opacity-80 transition-all">Sair</button>
+      <div className="w-full flex justify-end px-5 min-md:px-0">
+        <span className="self-end items-end justify-end">
+          <button onClick={() => handleSignOut()} type="button" className="uppercase text-zinc-600 text-sm font-semibold hover:opacity-80 hover:transition-all">Sair</button>
         </span>
       </div>
     </header>

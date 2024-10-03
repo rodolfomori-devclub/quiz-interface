@@ -5,6 +5,8 @@ import mainBannerImg from "../../../assets/banner-min.png"
 
 import { useUser } from "../../../hooks/user"
 
+import { IoMdArrowDropright } from "react-icons/io"
+
 export function QuizResponse() {
   const { userFinalGrade } = useUser()
 
@@ -34,11 +36,11 @@ export function QuizResponse() {
 
         <div id="rules-of-prize" className="mt-6">
           <ul className="flex flex-col gap-2 text-zinc-600 text-sm min-md:text-base">
-            <li>Ter acertado 7 questões ou mais neste quiz;</li>
-            <li>Assistir até o final à aula ao vivo que vai acontecer no domingo, dia 29/09/2024 às 20h (horário de Brasília), no meu canal no Youtube;</li>
-            <li>Ser sorteado;</li>
-            <li>Atender à ligação que eu farei, através do número de telefone que você cadastrou neste formulário;</li>
-            <li>Responder à equipe, na ligação, a palavra-chave que eu vou dizer durante a aula.</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ter acertado 7 questões ou mais neste quiz;</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Assistir até o final à aula ao vivo que vai acontecer no domingo, dia 29/09/2023 às 20h (horário de Brasília), no meu canal no Youtube;</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ser sorteado;</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Atender à ligação que eu farei, através do número de telefone que você cadastrou neste formulário;</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Responder à equipe, na ligação, a palavra-chave que eu vou dizer durante a aula.</li>
           </ul>
         </div>
       </div>
