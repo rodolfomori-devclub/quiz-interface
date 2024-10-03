@@ -67,32 +67,32 @@ function Home() {
 
         <div id="draw-rules" className="mt-3 flex flex-col gap-5">
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Até quando eu posso fazer o quiz?</h4></div>
+            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Até quando eu posso fazer o quiz?</h4></div>
             <p className="text-zinc-600">Até às 18h (horário de Brasília) do dia 29/09/2024, domingo.</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Quando acontecerá o sorteio?</h4></div>
+            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Quando acontecerá o sorteio?</h4></div>
             <p className="text-zinc-600">No domingo, dia 29/09/2024, durante a última aula do Desafio, que vai acontecer ao vivo no meu canal no YouTube e está prevista para começar às 20h (horário de Brasília).</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Todo mundo que responder ao quiz participará do sorteio?</h4></div>
+            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Todo mundo que responder ao quiz participará do sorteio?</h4></div>
             <p className="text-zinc-600">NÃO. Apenas as pessoas que fizerem o QUIZ e acertarem 70% ou mais da prova serão elegíveis e participarão do sorteio.</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Se eu for sorteado no domingo ao vivo terei direito, automaticamente, ao prêmio?</h4></div>
+            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Se eu for sorteado no domingo ao vivo terei direito, automaticamente, ao prêmio?</h4></div>
             <p className="text-zinc-600">NÃO. Como vai funcionar? É preciso que você cumpra todos os critérios: (1) esteja online e ao vivo no momento do sorteio, (2) você atenda a ligação falando a palavra-chave (que só será divulgada durante a aula do dia 29/09/2024).</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Eu posso responder o quiz mais de uma vez para ter mais chances de ser sorteado?</h4></div>
+            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Eu posso responder o quiz mais de uma vez para ter mais chances de ser sorteado?</h4></div>
             <p className="text-zinc-600">NÃO. A resposta está vinculada ao CPF e cada pessoa tem direito a apenas uma resposta. Isso garante a lisura do sorteio, excluindo a possibilidade de entrada dupla na lista e eliminando de fato as pessoas que, por não terem participado do DESAFIO DA GESTÃO DE TRÁFEGO, forem reprovadas.</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Apenas uma pessoa vai receber todos os prêmios?</h4></div>
+            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Apenas uma pessoa vai receber todos os prêmios?</h4></div>
             <p className="text-zinc-600">Sim. Será realizado um único sorteio, por meio do qual será definido o participante que vai receber todos os prêmios (do Kit nº 01 OU do Kit nº 02) descritos neste regulamento.</p>
           </div>
 
@@ -125,19 +125,23 @@ function Home() {
 
             <p className="mt-4"><strong>Caso o participante sorteado opte por receber o Kit Gestão de Tráfego nº 01:</strong></p>
 
-            <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={26} /><p className="text-zinc-600 text-sm min-md:text-base">Em até 90 dias após a realização do sorteio, será enviado o notebook* e o Iphone* ao endereço do usuário. (*O modelo, marca e especificações dos itens serão escolhidos a partir de critérios definidos exclusivamente pela equipe do especialista Devclub).</p></div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={24} style={{ minWidth: '26px', marginRight: '6px' }} /><p className="text-zinc-600 text-sm min-md:text-base">Em até 90 dias após a realização do sorteio, será enviado o notebook* e o Iphone* ao endereço do usuário. (*O modelo, marca e especificações dos itens serão escolhidos a partir de critérios definidos exclusivamente pela equipe do especialista Devclub).</p></div>
 
-            <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={26} /><p className="text-zinc-600 text-sm min-md:text-base">O participante sorteado obrigatoriamente deverá residir e/ou indicar um endereço no Brasil para recebimento dos itens previstos no kit em questão.</p></div>
+              <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={24} style={{ minWidth: '26px', marginRight: '6px' }} /><p className="text-zinc-600 text-sm min-md:text-base">O participante sorteado obrigatoriamente deverá residir e/ou indicar um endereço no Brasil para recebimento dos itens previstos no kit em questão.</p></div>
 
-            <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={26} /><p className="text-zinc-600 text-sm min-md:text-base">Em até 07 dias após a realização do sorteio, será concedido 01 (um) acesso online ao infoproduto Comunidade Devclub de Tráfego pelo período de 12 (doze) meses.</p></div>
+              <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={24} style={{ minWidth: '26px', marginRight: '6px' }} /><p className="text-zinc-600 text-sm min-md:text-base">Em até 07 dias após a realização do sorteio, será concedido 01 (um) acesso online ao infoproduto Comunidade Devclub de Tráfego pelo período de 12 (doze) meses.</p></div>
+            </div>
 
             <p className="mt-6"><strong>Caso o participante sorteado opte por receber o Kit Gestão de Tráfego nº 02:</strong></p>
 
-            <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={26} /><p className="text-zinc-600 text-sm min-md:text-base">Em até 30 dias após a realização do sorteio, o participante sorteado deverá encaminhar os Boletos Bancários e/ou Documentos de Cobrança, ainda não vencidos, no valor de R$10 mil e, ainda, deverá o participante sorteado apresentar para fins do pagamento do prêmio, a indicação do CNPJ do negócio detido em seu nome ou a comprovação da condução do negócio por si, se na pessoa física.</p></div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={24} style={{ minWidth: '26px', marginRight: '6px' }} /><p className="text-zinc-600 text-sm min-md:text-base">Em até 30 dias após a realização do sorteio, o participante sorteado deverá encaminhar os Boletos Bancários e/ou Documentos de Cobrança, ainda não vencidos, no valor de R$10 mil e, ainda, deverá o participante sorteado apresentar para fins do pagamento do prêmio, a indicação do CNPJ do negócio detido em seu nome ou a comprovação da condução do negócio por si, se na pessoa física.</p></div>
 
-            <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={26} /> <p className="text-zinc-600 text-sm min-md:text-base">Em até 07 dias após a realização do sorteio, será concedido 01 (um) acesso online ao infoproduto Comunidade Devclub de Tráfego pelo período de 12 (doze) meses.</p></div>
+              <div className="flex items-center gap-2"><IoMdArrowDropright className="text-zinc-400" size={24} style={{ minWidth: '26px', marginRight: '6px' }} /> <p className="text-zinc-600 text-sm min-md:text-base">Em até 07 dias após a realização do sorteio, será concedido 01 (um) acesso online ao infoproduto Comunidade Devclub de Tráfego pelo período de 12 (doze) meses.</p></div>
+            </div>
 
-            <p className="text-zinc-600 text-sm min-md:text-base mt-4"><strong>Importante:</strong>{" "}O participante sorteado deverá informar seus dados pessoais corretamente, assim como seu endereço e informações da sua empresa (se o caso), bem como um e-mail válido para, após o cadastro, ser liberado o seu acesso ao infoproduto Comunidade Sobral de Tráfego.</p>
+            <p className="text-zinc-600 text-sm min-md:text-base mt-4"><strong>Importante:</strong>{" "}O participante sorteado deverá informar seus dados pessoais corretamente, assim como seu endereço e informações da sua empresa (se o caso), bem como um e-mail válido para, após o cadastro, ser liberado o seu acesso ao infoproduto Comunidade Devclub.</p>
           </div>
         </div>
 
@@ -172,7 +176,7 @@ function Home() {
           <div className="w-full min-md:flex min-md:justify-center">
             <button
               onClick={handleNavigate}
-              className={`text-white bg-violet-500 h-12 rounded-sm shadow-sm w-full min-md:w-[50%] mt-4 ${!isChecked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-violet-700'
+              className={`text-white bg-violet-500 h-12 rounded-sm shadow-sm w-full min-md:w-[50%] mt-4 ${!isChecked ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90 hover:transition-all'
                 }`}
               type="button"
               disabled={!isChecked}

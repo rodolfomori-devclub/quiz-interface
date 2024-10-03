@@ -149,7 +149,7 @@ export function Quiz() {
           <div className="w-full min-md:flex min-md:justify-center">
             <button
               type="submit"
-              className="w-full py-3 bg-violet-500 text-white font-bold rounded-lg shadow hover:bg-violet-700 transition duration-300 mt-8 min-md:w-[50%]"
+              className="w-full py-3 bg-violet-500 text-white font-bold rounded-lg shadow hover:opacity-90 hover:transition-all transition duration-300 mt-8 min-md:w-[50%]"
               disabled={loadingSubmit}
             >
               {loadingSubmit ? 'Enviando respostas...' : 'Enviar Respostas'}
