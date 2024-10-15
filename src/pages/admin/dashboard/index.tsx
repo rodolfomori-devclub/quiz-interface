@@ -57,6 +57,7 @@ export function AdminDashboard() {
         "CPF": user.document,
         "Telefone": user.phone,
         "Nota": user.finalGrade !== null ? user.finalGrade : 'Não preenchido',
+        "Palavras-chave": user?.keywords!.length > 0 ? user?.keywords!.join(', ') : 'Nenhuma',
       }))
     )
 
@@ -312,6 +313,20 @@ export function AdminDashboard() {
               <FaRegCopy className="text-zinc-400" />
               {copied && <span className="text-green-500 text-sm">Número copiado!</span>}
             </button>
+
+            <div className="mt-4">
+              <h3 className="text-zinc-600 font-semibold">Palavras-chave que foram cadastradas no QUIZ:</h3>
+
+              <ul className="mt-2">
+                {selectedUser?.keywords?.map((keyword, index) => {
+                  return (
+                    <li key={index}>Palavra-chave {<b>{index + 1}</b>} - {keyword}</li>
+                  )
+                })}
+              </ul>
+
+              {selectedUser?.alreadyFilledQuiz === false && <p className="text-sm text-zinc-600 mt-4">O QUIZ ainda não foi preenchido por esse usuário.</p>}
+            </div>
           </div>
         </Modal>
       )}

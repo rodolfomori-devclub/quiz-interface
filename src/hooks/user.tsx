@@ -14,6 +14,7 @@ export interface User {
   finalGrade?: number | null
   birthDate?: string | Date
   doLiveAbroad?: boolean
+  keywords?: string[]
   createdAt?: Date | null
   updatedAt?: Date | null
 }
