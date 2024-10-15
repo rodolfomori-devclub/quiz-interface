@@ -37,6 +37,7 @@ export function Quiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({})
   const [quizData, setQuizData] = useState<Question[]>([])
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false)
+  const [keywords, setKeywords] = useState<string[]>(['', '', ''])
 
   const navigate = useNavigate()
   const { userData, setUserFinalGrade } = useUser()
@@ -46,6 +47,12 @@ export function Quiz() {
       ...prev,
       [questionId]: answerId,
     }))
+  }
+
+  const handleKeywordChange = (index: number, value: string) => {
+    const newKeywords = [...keywords]
+    newKeywords[index] = value
+    setKeywords(newKeywords)
   }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -60,7 +67,8 @@ export function Quiz() {
 
     const user_selected_answers = {
       userId: userData?.user.id,
-      quizResponse: selectedAnswers
+      quizResponse: selectedAnswers,
+      keywords
     }
 
     setLoadingSubmit(true)
@@ -146,6 +154,24 @@ export function Quiz() {
               </div>
             </div>
           ))}
+
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-sm min-md:text-base font-bold mb-4">Quais são as 3 palavras chave?</h2>
+            <div className="space-y-4">
+              {keywords.map((keyword, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => handleKeywordChange(index, e.target.value)}
+                  placeholder={`Palavra chave aula ${index + 1}`}
+                  className="w-full p-2 rounded outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200 text-sm"
+                  required
+                />
+              ))}
+            </div>
+          </div>
+
           <div className="w-full min-md:flex min-md:justify-center">
             <button
               type="submit"
