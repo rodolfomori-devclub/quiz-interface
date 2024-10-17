@@ -5,6 +5,7 @@ export const Footer = () => {
   const currentPage: string = useLocation().pathname
 
   const isPrivatePage: boolean = currentPage === '/quiz'
+  const isPolicyPage: boolean = currentPage === '/politica-de-privacidade'
 
   return (
     <footer className={`w-full h-fit p-4 relative bottom-0 ${isPrivatePage ? 'bg-white' : 'bg-zinc-100'}`}>
@@ -12,9 +13,11 @@ export const Footer = () => {
         <p className="text-zinc-600 text-sm text-center">
           Copyright © {currentYear} Devclub. Todos os direitos reservados
         </p>
-        <p className="text-slate-300 text-sm text-center">
-          Política de Privacidade
-        </p>
+        {!isPolicyPage && (
+          <a href="/politica-de-privacidade" rel="noopener noreferrer" className="text-slate-400 text-sm text-center hover:opacity-80" target="_blank">
+            Política de Privacidade
+          </a>
+        )}
       </div>
     </footer>
   )

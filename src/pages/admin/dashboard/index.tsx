@@ -7,8 +7,8 @@ import { quizAdminAPI } from "../../../services/api"
 import { Modal } from "../../../components/Modal"
 import { AdminPrivateHeader } from "../../../components/AdminPrivateHeader"
 
+import { FaRegCopy } from "react-icons/fa"
 import { CiSettings } from "react-icons/ci"
-import { FaRegCopy } from "react-icons/fa6"
 import { BsFiletypeXlsx } from "react-icons/bs"
 import { VscErrorSmall } from "react-icons/vsc"
 import { RiSendPlane2Line } from "react-icons/ri"
@@ -28,7 +28,7 @@ export function AdminDashboard() {
   const [menuOptions, setMenuOptions] = useState<MenuOptions>('dashboard')
 
   const [selectedUser, setSelectedUser] = useState<User>({})
-  const [showModal, setShowModal] = useState<boolean>(false)
+  const [showModal, setShowModal] = useState<string>('#0')
   const [copied, setCopied] = useState<boolean>(false)
 
   const handleQueryUsers = async (): Promise<void> => {
@@ -95,12 +95,18 @@ export function AdminDashboard() {
 
   const handleModal = (user: User): void => {
     setSelectedUser(user)
-    setShowModal(true)
+    setShowModal('#modal-details')
   }
 
   const handleCloseModal = (): void => {
-    setShowModal(false)
+    setShowModal('#0')
   }
+
+  const handleKeywordsModal = (user: User): void => {
+    setSelectedUser(user)
+    setShowModal('#modal-keywords')
+  }
+
 
   const handleCopyPhone = (): void => {
     navigator.clipboard.writeText(selectedUser?.phone!)
@@ -115,11 +121,13 @@ export function AdminDashboard() {
     handleQueryUsers()
   }, [])
 
+  console.log(showModal)
+
   return (
     <>
       <div className="w-full min-h-screen">
         <AdminPrivateHeader />
-        <div className="w-full p-4 flex-grow min-lg:max-w-[868px] min-lg:mx-auto mt-5">
+        <div className="w-full p-4 flex-grow min-lg:max-w-[940px] min-lg:mx-auto mt-5">
           <div className="flex items-center justify-between">
 
             <ul className="flex items-center gap-4 overflow-x-auto px-1">
@@ -165,24 +173,28 @@ export function AdminDashboard() {
               </div>
 
               <div className="w-full overflow-x-auto mt-4">
-                <table className="min-w-full bg-white">
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                   <thead>
                     <tr>
-                      <th className="py-2 px-4 border-b text-left text-sm min-lg:text-base text-zinc-700">#</th>
-                      <th className="py-2 px-4 border-b text-left text-sm min-lg:text-base text-zinc-700">Nome</th>
-                      <th className="py-2 px-4 border-b text-left text-sm min-lg:text-base text-zinc-700">CPF</th>
-                      <th className="py-2 px-4 border-b text-left text-sm min-lg:text-base text-zinc-700">Telefone</th>
-                      <th className="py-2 px-4 border-b text-left text-sm min-lg:text-base text-zinc-700">Nota QUIZ</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">#</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Nome</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">CPF</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Telefone</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Nota QUIZ</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Palavras-chave</th>
+                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Detalhes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredUsers.map((user, index) => (
-                      <tr key={user.id} className="hover:opacity-60 hover:transition-all" onClick={() => handleModal(user)}>
-                        <td className="py-2 px-4 border-b text-sm min-lg:text-base cursor-pointer">{index + 1}</td>
-                        <td className="py-2 px-4 border-b text-sm min-lg:text-base cursor-pointer max-w-[280px] truncate">{user.name}</td>
-                        <td className="py-2 px-4 border-b text-sm min-lg:text-base cursor-pointer">{user.document!.slice(0, 3)}***</td>
-                        <td className="py-2 px-4 border-b text-sm min-lg:text-base cursor-pointer">{user.phone!.slice(0, 7)}****</td>
-                        <td className="py-2 px-4 border-b text-xs min-lg:text-sm cursor-pointer">{user.finalGrade !== -1 ? user.finalGrade : 'Não preenchido'}</td>
+                      <tr key={user.id} className="hover:opacity-60 hover:transition-all">
+                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base ">{index + 1}</td>
+                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base max-w-[280px] truncate">{user.name}</td>
+                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base">{user.document!.slice(0, 3)}***</td>
+                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base">{user.phone!.slice(0, 7)}****</td>
+                        <td className="py-2 px-4 border border-gray-200 text-xs min-lg:text-sm">{user.finalGrade !== -1 ? user.finalGrade : 'Não preenchido'}</td>
+                        <td className="py-2 px-4 border border-gray-200 text-xs min-lg:text-sm cursor-pointer text-center" onClick={() => handleKeywordsModal(user)}>Ver</td>
+                        <td className="py-2 px-4 border border-gray-200 text-xs min-lg:text-sm cursor-pointer text-center" onClick={() => handleModal(user)}>Ver</td>
                       </tr>
                     ))}
                   </tbody>
@@ -304,7 +316,7 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {showModal && (
+      {showModal === '#modal-details' && (
         <Modal title="Detalhes do usuário" isOpen={showModal} onClose={handleCloseModal} className="w-[350px] h-[150px]">
           <div className="w-full flex flex-col gap-2">
             <h3 className="text-zinc-600">{selectedUser?.name}</h3>
@@ -314,22 +326,28 @@ export function AdminDashboard() {
               {copied && <span className="text-green-500 text-sm">Número copiado!</span>}
             </button>
 
-            <div className="mt-4">
-              <h3 className="text-zinc-600 font-semibold">Palavras-chave que foram cadastradas no QUIZ:</h3>
-
-              <ul className="mt-2">
-                {selectedUser?.keywords?.map((keyword, index) => {
-                  return (
-                    <li key={index}>Palavra-chave {<b>{index + 1}</b>} - {keyword}</li>
-                  )
-                })}
-              </ul>
-
-              {selectedUser?.alreadyFilledQuiz === false && <p className="text-sm text-zinc-600 mt-4">O QUIZ ainda não foi preenchido por esse usuário.</p>}
-            </div>
           </div>
         </Modal>
       )}
+
+      {showModal === '#modal-keywords' && (
+        <Modal title="Detalhes" isOpen={showModal} onClose={handleCloseModal} className="w-[350px] h-[150px]">
+          <div className="mt-4">
+            <h3 className="text-zinc-600 font-semibold">Palavras-chave que foram cadastradas no QUIZ:</h3>
+
+            <ul className="mt-2 flex flex-col gap-2">
+              {selectedUser?.keywords?.map((keyword, index) => {
+                return (
+                  <li key={index}>Palavra-chave {<b>{index + 1}</b>} - {keyword}</li>
+                )
+              })}
+            </ul>
+
+            {selectedUser?.alreadyFilledQuiz === false && <p className="text-sm text-zinc-600 mt-4">O QUIZ ainda não foi preenchido por esse usuário.</p>}
+          </div>
+        </Modal>
+      )}
+
     </>
   )
 }
