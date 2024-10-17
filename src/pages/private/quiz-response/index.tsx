@@ -20,7 +20,7 @@ export function QuizResponse() {
 
       <div className="w-full p-4 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
         <div id="result-info" className="w-full mt-4">
-          <h4 className="text-sm min-md:text-base text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao quiz do Desafio Devclub!</h4>
+          <h4 className="text-sm min-md:text-base text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao QUIZ do MISSÃO PROGRAMAÇÃO DO ZERO.</h4>
 
           <div className="flex items-center gap-2 justify-center mt-4">
             <p className="text-zinc-600 text-sm min-md:text-base">Pontuação</p>
@@ -36,11 +36,9 @@ export function QuizResponse() {
 
         <div id="rules-of-prize" className="mt-6">
           <ul className="flex flex-col gap-2 text-zinc-600 text-sm min-md:text-base">
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ter acertado 7 questões ou mais neste quiz;</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Assistir até o final à aula ao vivo que vai acontecer no domingo, dia 29/09/2023 às 20h (horário de Brasília), no meu canal no Youtube;</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ser sorteado;</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Atender à ligação que eu farei, através do número de telefone que você cadastrou neste formulário;</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Responder à equipe, na ligação, a palavra-chave que eu vou dizer durante a aula.</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ter acertado 7 questões ou mais neste quiz (70% da prova);</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Estar presente ATÉ O FINAL da live que vai acontecer no domingo, dia 20/10/2024, às 20h (horário de Brasília), no meu canal no YouTube;</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Atender ao telefone com o comando caso seja sorteado.</li>
           </ul>
         </div>
       </div>

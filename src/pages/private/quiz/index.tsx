@@ -167,6 +167,7 @@ export function Quiz() {
                   placeholder={`Palavra chave aula ${index + 1}`}
                   className="w-full p-2 rounded outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200 text-sm"
                   required
+                  autoComplete="off"
                 />
               ))}
             </div>

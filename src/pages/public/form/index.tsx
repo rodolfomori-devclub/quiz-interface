@@ -1,10 +1,10 @@
-import { FormEventHandler, useState } from "react"
+import { FormEventHandler, useEffect, useState } from "react"
 import { Header } from "../../../components/Header"
 import { Footer } from "../../../components/Footer"
 
 import mainBannerImg from "../../../assets/banner-min.png"
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import { LuPhone } from "react-icons/lu"
 import { RiUser3Line } from "react-icons/ri"
@@ -44,7 +44,8 @@ export function Form() {
   })
 
   const navigate = useNavigate()
-  const { setUserData } = useUser()
+  const currentPath = useLocation().pathname
+  const { setUserData, isPolicyChecked } = useUser()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
@@ -121,6 +122,12 @@ export function Form() {
   const handleBirthDateInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setBirthDate(e.target.value)
   }
+
+  useEffect(() => {
+    if (!isPolicyChecked) {
+      navigate('/')
+    }
+  }, [currentPath])
 
   return (
     <div className="w-full min-h-screen flex flex-col">

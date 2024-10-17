@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import { IoCloseSharp } from 'react-icons/io5'
 
 export interface ModalProps<T = any> {
-  isOpen: boolean
+  isOpen: boolean | string
   onClose?: () => void
   children?: ReactNode
   object?: T
@@ -14,7 +14,7 @@ export interface ModalProps<T = any> {
 }
 
 export const Modal = ({ isOpen = false, onClose, children, className, isHiddenIcon, title, icon, isCloseIcon = true, ...props }: ModalProps) => {
-  return isOpen ? (
+  return isOpen === true || isOpen !== '#0' ? (
     <div className="fixed bottom-0 left-0 right-0 top-0 z-[999] flex items-center justify-center bg-black bg-opacity-85 max-md:px-5" {...props}>
       <div className={`flex h-fit flex-col rounded-md bg-white px-4 py-2 ${className} ${!className && 'max-w-[40rem]'}`}>
         {isHiddenIcon ? (
