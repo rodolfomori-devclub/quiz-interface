@@ -68,13 +68,7 @@ function Home() {
         <div id="draw-rules" className="mt-3 flex flex-col gap-5">
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
             <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Até quando eu posso fazer o quiz?</h4></div>
-            <p className="text-zinc-600">Até às 18h (horário de Brasília) do dia 20/10/2024, domingo.</p>
-          </div>
-
-          <div className="flex flex-col gap-1 text-sm min-md:text-base">
-            <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Quando ganhar o prêmio?</h4></div>
-            <p className="text-zinc-600">No domingo, dia 20/10/2024, durante a última aula do Missão Programação do Zero, que vai acontecer ao vivo no meu canal no YouTube e está previsto para começar às 20h (horário de Brasília).
-            </p>
+            <p className="text-zinc-600">Até às 18h (horário de Brasília) da segunda-feira.</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
@@ -84,7 +78,7 @@ function Home() {
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
             <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Basta ser sorteado e o notebook será meu?</h4></div>
-            <p className="text-zinc-600">NÃO. Como vai funcionar? É preciso que você cumpra todos os critérios: (1) esteja online e ao vivo no momento do sorteio, (2) você atenda a ligação falando o comando que o Rodolfo der antes da ligação (que só será divulgada durante a aula do dia 20/10/2024).</p>
+            <p className="text-zinc-600">NÃO. Como vai funcionar? É preciso que você cumpra todos os critérios: (1) esteja ao vivo comigo em todas as aulas, (2) responda corretamente pelo menos 70% do quiz.</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
@@ -101,11 +95,10 @@ function Home() {
             <h4 className="uppercase text-violet-500 font-semibold text-sm">Resumo: O que eu preciso fazer para concorrer ao prêmio?</h4>
 
             <ul className="flex flex-col gap-2 text-zinc-600 mt-2">
-              <li>1) Responder ao <b>QUIZ</b> até às 18h (horário de Brasília) do dia 20 de outubro de 2024;</li>
+              <li>1) Responder ao <b>QUIZ</b> até às 18h (horário de Brasília) da Segunda-feira.</li>
               <li>2) Acertar 7 ou mais questões do <b>QUIZ</b> (70% da prova);</li>
-              <li>3) Estar presente ATÉ O FINAL da live que vai acontecer no domingo, dia 20/10/2024, às 20h (horário de Brasília), no meu canal no YouTube;
+              <li>3)Estao ao vivo nas 4 aulas, no meu canal no YouTube;
               </li>
-              <li>4) Atender ao telefone com o comando caso seja sorteado.</li>
             </ul>
 
             <p className="text-zinc-600 font-semibold mt-4 uppercase min-md:text-lg">Boa sorte!</p>

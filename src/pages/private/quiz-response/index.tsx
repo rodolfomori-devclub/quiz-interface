@@ -37,8 +37,7 @@ export function QuizResponse() {
         <div id="rules-of-prize" className="mt-6">
           <ul className="flex flex-col gap-2 text-zinc-600 text-sm min-md:text-base">
             <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ter acertado 7 questões ou mais neste quiz (70% da prova);</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Estar presente ATÉ O FINAL da live que vai acontecer no domingo, dia 20/10/2024, às 20h (horário de Brasília), no meu canal no YouTube;</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Atender ao telefone com o comando caso seja sorteado.</li>
+            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Assistir todas as aulas AO VIVO comigo;</li>
           </ul>
         </div>
       </div>
