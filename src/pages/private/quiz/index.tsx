@@ -37,7 +37,7 @@ export function Quiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({})
   const [quizData, setQuizData] = useState<Question[]>([])
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false)
-  const [keywords, setKeywords] = useState<string[]>(['', '', ''])
+  const [keywords, setKeywords] = useState<string[]>(['', '', '', ''])
 
   const navigate = useNavigate()
   const { userData, setUserFinalGrade } = useUser()
