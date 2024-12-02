@@ -45,8 +45,6 @@ function Home() {
   }
     , [])
 
-  console.log(isPolicyChecked)
-
   return (
     <div className="w-full min-h-screen">
       <Header />
