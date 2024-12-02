@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { User } from "../../../hooks/user"
+import { User, useUser } from "../../../hooks/user"
 import { ToastifyDisplay } from "../../../utils"
 import { quizAdminAPI } from "../../../services/api"
 
@@ -8,9 +8,9 @@ import { Modal } from "../../../components/Modal"
 import { AdminPrivateHeader } from "../../../components/AdminPrivateHeader"
 
 import { FaRegCopy } from "react-icons/fa"
-import { CiSettings } from "react-icons/ci"
 import { BsFiletypeXlsx } from "react-icons/bs"
 import { VscErrorSmall } from "react-icons/vsc"
+import { BiTrashAlt } from "react-icons/bi";
 import { RiSendPlane2Line } from "react-icons/ri"
 import { ImSpinner3, ImCheckboxChecked } from "react-icons/im"
 
@@ -19,6 +19,7 @@ import * as XLSX from 'xlsx'
 type MenuOptions = 'dashboard' | 'Q&A'
 
 export function AdminDashboard() {
+  const { adminData } = useUser()
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [searchUser, setSearchUser] = useState<string>('')
@@ -107,7 +108,6 @@ export function AdminDashboard() {
     setShowModal('#modal-keywords')
   }
 
-
   const handleCopyPhone = (): void => {
     navigator.clipboard.writeText(selectedUser?.phone!)
     setCopied(true)
@@ -115,6 +115,40 @@ export function AdminDashboard() {
     setTimeout(() => {
       setCopied(false)
     }, 2000)
+  }
+
+  const handleDeleteUsers = async (): Promise<void> => {
+    const confirmDelete = window.confirm(
+      'Tem certeza que deseja excluir todos os usuários? Essa ação é irreversível!'
+    );
+
+    if (!users.length || !filteredUsers.length) {
+      return
+    }
+
+    if (confirmDelete) {
+      try {
+        const response = await quizAdminAPI('/admin/delete-users', {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${adminData?.token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          handleQueryUsers()
+          ToastifyDisplay({
+            toastType: 'success',
+            message: 'Usuário(s) excluído(s) com sucesso',
+          })();
+        }
+      } catch (error) {
+        ToastifyDisplay({
+          toastType: 'error',
+          message: 'Erro ao excluir o(s) usuário(s). Tente novamente mais tarde.',
+        });
+      }
+    }
   }
 
   useEffect(() => {
@@ -135,7 +169,7 @@ export function AdminDashboard() {
               <li onClick={() => handleChangeMenuType('Q&A')} className={`font-semibold text-zinc-600 hover:opacity-80 hover:transition-all cursor-pointer px-1 ${menuOptions === 'Q&A' && 'bg-violet-200 rounded-md'}`}>Q&A</li>
             </ul>
             <div className="flex items-center gap-2">
-              <CiSettings size={24} className="text-zinc-600 cursor-pointer hover:opacity-80 transition-all" title="Configurações" />
+              <BiTrashAlt onClick={handleDeleteUsers} size={22} className="text-zinc-600 cursor-pointer hover:opacity-80 transition-all" title="Excluir todos os usuários" />
               <BsFiletypeXlsx size={20} className="text-zinc-600 cursor-pointer hover:opacity-80 transition-all" title="Exportar tabela de usuários" onClick={exportToXLSX} />
             </div>
           </div>
