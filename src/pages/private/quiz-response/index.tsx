@@ -6,9 +6,22 @@ import mainBannerImg from "../../../assets/banner-min.png"
 import { useUser } from "../../../hooks/user"
 
 import { IoMdArrowDropright } from "react-icons/io"
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 export function QuizResponse() {
-  const { userFinalGrade } = useUser()
+  const { userFinalGrade, certificateUrl } = useUser()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (userFinalGrade! <= 6) {
+      localStorage.removeItem('@quiz-devclub-v1:alreadyFilledQuiz')
+    }
+  }, [userFinalGrade])
+
+  const handleNavigateUserToQuizResponse = () => {
+    navigate('/quiz')
+  }
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -21,6 +34,15 @@ export function QuizResponse() {
       <div className="w-full p-4 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
         <div id="result-info" className="w-full mt-4">
           <h4 className="text-sm min-md:text-base text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao QUIZ do MISSÃO PROGRAMAÇÃO DO ZERO.</h4>
+          {userFinalGrade! >= 7 ? <label className="flex justify-center my-4">
+            <a href={certificateUrl} download className="text-sm min-md:text-base text-violet-500 font-bold cursor-pointer hover:opacity-80">Clique aqui para receber seu certificado agora mesmo</a>
+          </label>
+            :
+            <label className="flex flex-col items-center gap-2 justify-center my-4">
+              <p className="text-zinc-600 text-sm min-md:text-base">Opss, você não tirou a nota mínima...</p>
+              <button type="button" onClick={handleNavigateUserToQuizResponse} className="text-violet-500 font-bold hover:opacity-80">Tentar novamente o QUIZ</button>
+            </label>
+          }
 
           <div className="flex items-center gap-2 justify-center mt-4">
             <p className="text-zinc-600 text-sm min-md:text-base">Pontuação</p>

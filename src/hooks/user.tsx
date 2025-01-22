@@ -34,6 +34,8 @@ interface AuthContextData {
   setAdminData: React.Dispatch<React.SetStateAction<AdminAuthAcess>>
   isPolicyChecked: boolean
   setIsPolicyChecked: React.Dispatch<React.SetStateAction<boolean>>
+  certificateUrl: string
+  setCertificateUrl: React.Dispatch<React.SetStateAction<string>>
 }
 
 interface AuthProviderProps {
@@ -65,6 +67,8 @@ function UserProvider({ children }: AuthProviderProps) {
 
   const [userFinalGrade, setUserFinalGrade] = useState<number | null>(null)
   const [isPolicyChecked, setIsPolicyChecked] = useState<boolean>(false)
+
+  const [certificateUrl, setCertificateUrl] = useState<string>('')
 
   useEffect(() => {
     const token = localStorage.getItem('@quiz-devclub-v1:accessToken')
@@ -103,6 +107,8 @@ function UserProvider({ children }: AuthProviderProps) {
         setAdminData,
         isPolicyChecked,
         setIsPolicyChecked,
+        setCertificateUrl,
+        certificateUrl,
       }}
     >
       {children}
