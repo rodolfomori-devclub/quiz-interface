@@ -7,7 +7,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "tsc -b && vite build && aws s3 sync ./dist s3://quiz-devclub --delete && aws cloudfront create-invalidation --distribution-id E3U5CPN5AWQIHT --paths '/*'"
   },
   "dependencies": {
     "axios": "^1.7.7",
