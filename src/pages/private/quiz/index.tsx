@@ -40,7 +40,7 @@ export function Quiz() {
   const [keywords, setKeywords] = useState<string[]>(['', '', ''])
 
   const navigate = useNavigate()
-  const { userData, setUserFinalGrade } = useUser()
+  const { userData, setUserFinalGrade, setCertificate } = useUser()
 
   const handleAnswerSelect = (questionId: string, answerId: string) => {
     setSelectedAnswers(prev => ({
@@ -85,6 +85,7 @@ export function Quiz() {
 
         if (response.status === 200) {
           setUserFinalGrade(response.data.finalGrade)
+          setCertificate(response.data.certificateUrl)
           localStorage.setItem('@quiz-devclub-v1:alreadyFilledQuiz', 'true')
           navigate('/resultado')
         }

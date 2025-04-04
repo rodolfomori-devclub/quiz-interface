@@ -54,11 +54,11 @@ function Home() {
       </div>
 
       <section className="w-full p-4 mt-2 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
-        <h3 className="text-violet-500 font-semibold text-lg min-md:text-2xl">Quiz do Missão Programação do Zero</h3>
+        <h3 className="text-violet-500 font-semibold text-lg min-md:text-2xl">Quiz do Programador em 72h - o desafio</h3>
 
-        <p className="text-zinc-600 mt-2 text-sm min-md:text-lg">Seja muito bem-vindo ao <b>QUIZ do MISSÃO PROGRAMAÇÃO DO ZERO.</b></p>
+        <p className="text-zinc-600 mt-2 text-sm min-md:text-lg">Seja muito bem-vindo ao <b>QUIZ do Programador em 72h - o desafio.</b></p>
 
-        <p className="text-zinc-600 mt-4 text-sm min-md:text-base">A finalidade deste QUIZ é, primeiro, ajudar a absorver todo o conteúdo que eu dei nas aulas do Missão Programação do Zero, colocando seu conhecimento, recém adquirido na prática, segundo, parabenizar e bonificar aqueles que comprovarem ter aprendido tudo o que foi ensinado. Por isso, quem acertar 70% (setenta por cento) ou mais neste QUIZ, vai concorrer a um notebook.
+        <p className="text-zinc-600 mt-4 text-sm min-md:text-base">A finalidade deste QUIZ é, primeiro, ajudar a absorver todo o conteúdo que eu dei nas aulas do Programador em 72h - o desafio, colocando seu conhecimento, recém adquirido na prática, segundo, parabenizar e bonificar aqueles que comprovarem ter aprendido tudo o que foi ensinado. Por isso, quem acertar 70% (setenta por cento) ou mais neste QUIZ, vai concorrer a um notebook.
         </p>
 
         <p className="text-zinc-600 mt-4 text-sm min-md:text-base">Para participar e concorrer ao sorteio, é preciso atentar-se às regras a seguir:</p>
@@ -66,7 +66,7 @@ function Home() {
         <div id="draw-rules" className="mt-3 flex flex-col gap-5">
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
             <div className="flex items-center"><IoMdArrowDropright className="text-zinc-400" size={26} style={{ minWidth: '26px', marginRight: '8px' }} /> <h4 className="uppercase text-violet-500 font-semibold text-sm">Até quando eu posso fazer o quiz?</h4></div>
-            <p className="text-zinc-600">Até às 18h (horário de Brasília) da segunda-feira.</p>
+            <p className="text-zinc-600">Até às 20h (horário de Brasília) de domingo.</p>
           </div>
 
           <div className="flex flex-col gap-1 text-sm min-md:text-base">
@@ -93,7 +93,7 @@ function Home() {
             <h4 className="uppercase text-violet-500 font-semibold text-sm">Resumo: O que eu preciso fazer para concorrer ao prêmio?</h4>
 
             <ul className="flex flex-col gap-2 text-zinc-600 mt-2">
-              <li>1) Responder ao <b>QUIZ</b> até às 18h (horário de Brasília) da Segunda-feira.</li>
+              <li>1) Responder ao <b>QUIZ</b> até às 20h (horário de Brasília) de domingo.</li>
               <li>2) Acertar 7 ou mais questões do <b>QUIZ</b> (70% da prova);</li>
               <li>3)Estao ao vivo nas 4 aulas, no meu canal no YouTube;
               </li>

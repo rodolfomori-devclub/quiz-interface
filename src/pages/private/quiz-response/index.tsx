@@ -8,7 +8,7 @@ import { useUser } from "../../../hooks/user"
 import { IoMdArrowDropright } from "react-icons/io"
 
 export function QuizResponse() {
-  const { userFinalGrade } = useUser()
+  const { userFinalGrade, certificate } = useUser()
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -20,7 +20,7 @@ export function QuizResponse() {
 
       <div className="w-full p-4 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
         <div id="result-info" className="w-full mt-4">
-          <h4 className="text-sm min-md:text-base text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao QUIZ do MISSÃO PROGRAMAÇÃO DO ZERO.</h4>
+          <h4 className="text-sm min-md:text-base text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao QUIZ do Programador em 72h - o desafio.</h4>
 
           <div className="flex items-center gap-2 justify-center mt-4">
             <p className="text-zinc-600 text-sm min-md:text-base">Pontuação</p>
@@ -28,6 +28,20 @@ export function QuizResponse() {
               {userFinalGrade}/10
             </div>
           </div>
+
+          {certificate && userFinalGrade! >= 7 ? (
+            <div className="mt-8 text-center">
+              <a
+                href={certificate}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="inline-block bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors"
+              >
+                📄 Baixar Certificado
+              </a>
+            </div>
+          ) : ''}
 
           <p className="text-sm min-md:text-base text-center text-violet-500 font-semibold mt-4">
             Lembrando que, para levar os prêmios, você precisa:
