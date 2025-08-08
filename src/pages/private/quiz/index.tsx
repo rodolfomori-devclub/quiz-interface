@@ -5,9 +5,9 @@ import mainBannerImg from "../../../assets/banner-min.png"
 
 import { FormEvent, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useUser } from "../../../hooks/user"
 import { quizUserAPI } from "../../../services/api"
 import { HandleAxiosAndGenericError, ToastifyDisplay } from "../../../utils"
-import { useUser } from "../../../hooks/user"
 
 interface RightAnswer {
   id: string
@@ -37,7 +37,6 @@ export function Quiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({})
   const [quizData, setQuizData] = useState<Question[]>([])
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false)
-  const [keywords, setKeywords] = useState<string[]>(['', '', ''])
 
   const navigate = useNavigate()
   const { userData, setUserFinalGrade, setCertificate } = useUser()
@@ -47,12 +46,6 @@ export function Quiz() {
       ...prev,
       [questionId]: answerId,
     }))
-  }
-
-  const handleKeywordChange = (index: number, value: string) => {
-    const newKeywords = [...keywords]
-    newKeywords[index] = value
-    setKeywords(newKeywords)
   }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -68,7 +61,7 @@ export function Quiz() {
     const user_selected_answers = {
       userId: userData?.user.id,
       quizResponse: selectedAnswers,
-      keywords
+      keywords: ['', '', '']
     }
 
     setLoadingSubmit(true)
@@ -132,13 +125,13 @@ export function Quiz() {
 
         <form onSubmit={handleSubmit} className="space-y-8 pb-4 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
           {quizData.map((question) => (
-            <div key={question.id} className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-sm min-md:text-base font-bold mb-4">{question.question}</h2>
+            <div key={question.id} className="bg-background-light p-4 rounded-lg shadow-md">
+              <h2 className="text-sm min-md:text-base font-bold mb-4 text-secondary">{question.question}</h2>
               <div className="space-y-4">
                 {question.answers.map((answer) => (
                   <label
                     key={answer.id}
-                    className="flex items-center space-x-3 p-2 bg-gray-50 hover:bg-gray-100 rounded cursor-pointer"
+                    className="flex items-center space-x-3 p-2 bg-neutral-50 hover:bg-neutral-100 rounded cursor-pointer"
                   >
                     <input
                       type="radio"
@@ -146,38 +139,20 @@ export function Quiz() {
                       value={answer.id}
                       checked={selectedAnswers[question.id] === answer.id}
                       onChange={() => handleAnswerSelect(question.id, answer.id)}
-                      className="form-radio text-green-600"
+                      className="form-radio text-primary"
                       required
                     />
-                    <span className="text-gray-700 text-sm min-md:text-base">{answer.description}</span>
+                    <span className="text-neutral-700 text-sm min-md:text-base">{answer.description}</span>
                   </label>
                 ))}
               </div>
             </div>
           ))}
 
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-sm min-md:text-base font-bold mb-4">Quais são as 3 palavras chave?</h2>
-            <div className="space-y-4">
-              {keywords.map((keyword, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  value={keyword}
-                  onChange={(e) => handleKeywordChange(index, e.target.value)}
-                  placeholder={`Palavra chave aula ${index + 1}`}
-                  className="w-full p-2 rounded outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200 text-sm"
-                  required
-                  autoComplete="off"
-                />
-              ))}
-            </div>
-          </div>
-
           <div className="w-full min-md:flex min-md:justify-center">
             <button
               type="submit"
-              className="w-full py-3 bg-violet-500 text-white font-bold rounded-lg shadow hover:opacity-90 hover:transition-all transition duration-300 mt-8 min-md:w-[50%]"
+              className="w-full py-3 bg-primary text-white font-bold rounded-lg shadow hover:opacity-90 hover:transition-all transition duration-300 mt-8 min-md:w-[50%]"
               disabled={loadingSubmit}
             >
               {loadingSubmit ? 'Enviando respostas...' : 'Enviar Respostas'}

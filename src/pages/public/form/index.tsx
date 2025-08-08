@@ -1,16 +1,15 @@
-import { FormEventHandler, useEffect, useState } from "react"
-import { Header } from "../../../components/Header"
+import { FormEventHandler, useState } from "react"
 import { Footer } from "../../../components/Footer"
+import { Header } from "../../../components/Header"
 
 import mainBannerImg from "../../../assets/banner-min.png"
 
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import { LuPhone } from "react-icons/lu"
-import { RiUser3Line } from "react-icons/ri"
-import { MdOutlineEmail } from "react-icons/md"
-import { MdOutlineDateRange } from "react-icons/md"
+import { MdOutlineDateRange, MdOutlineEmail } from "react-icons/md"
 import { PiIdentificationCard } from "react-icons/pi"
+import { RiUser3Line } from "react-icons/ri"
 
 import { useUser } from '../../../hooks/user'
 import { quizUserAPI } from '../../../services/api'
@@ -44,8 +43,7 @@ export function Form() {
   })
 
   const navigate = useNavigate()
-  const currentPath = useLocation().pathname
-  const { setUserData, isPolicyChecked } = useUser()
+  const { setUserData } = useUser()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
@@ -123,12 +121,6 @@ export function Form() {
     setBirthDate(e.target.value)
   }
 
-  useEffect(() => {
-    if (!isPolicyChecked) {
-      navigate('/')
-    }
-  }, [currentPath])
-
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Header />
@@ -138,7 +130,7 @@ export function Form() {
       </div>
 
       <form className="w-full mt-4 flex-grow min-xs:max-w-[515px] min-xs:mx-auto" onSubmit={handleSubmit}>
-        <h4 className="text-sm text-violet-500 font-bold text-center">Preencha seus dados para continuar</h4>
+        <h4 className="text-sm text-primary font-bold text-center">Preencha seus dados para continuar</h4>
 
         <div className="p-5 flex flex-col gap-3 justify-center">
           <div className="flex items-center gap-1 w-full justify-center">
@@ -147,16 +139,16 @@ export function Form() {
               checked={isForeigner}
               onChange={handleCheckboxChange}
             />
-            <p className="text-zinc-600 text-sm">Sou estrangeiro</p>
+            <p className="text-neutral-600 text-sm">Sou estrangeiro</p>
           </div>
 
-          <div className="bg-zinc-100 rounded-sm w-full">
+          <div className="bg-neutral-100 rounded-sm w-full">
             <div className="relative">
-              <RiUser3Line className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
+              <RiUser3Line className="text-neutral-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
               <input
                 id="name"
                 type="text"
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                 placeholder="Seu nome completo"
                 value={user.name}
                 onChange={handleInputChange}
@@ -167,13 +159,13 @@ export function Form() {
             </div>
           </div>
 
-          <div className=" bg-zinc-100 rounded-sm w-full">
+          <div className=" bg-neutral-100 rounded-sm w-full">
             <div className="relative">
-              <MdOutlineEmail className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
+              <MdOutlineEmail className="text-neutral-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
               <input
                 id="email"
                 type="email"
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                 placeholder="Seu e-mail"
                 value={user.email}
                 onChange={handleInputChange}
@@ -183,14 +175,14 @@ export function Form() {
             </div>
           </div>
 
-          <div className="bg-zinc-100 rounded-sm w-full">
+          <div className="bg-neutral-100 rounded-sm w-full">
             <div className="relative">
-              <LuPhone className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={22} />
+              <LuPhone className="text-neutral-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={22} />
               {isForeigner ?
                 <input
                   id="phone"
                   type="text"
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                   placeholder="Seu Telefone + código do país"
                   value={user.phone}
                   onChange={handleInputChange}
@@ -198,12 +190,13 @@ export function Form() {
                   maxLength={86}
                   minLength={6}
                 /> :
+                // @ts-ignore
                 <InputMask
                   id="phone"
                   mask="(99) 99999-9999"
                   value={brPhone}
                   onChange={handleBRNumberInputChange}
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border border-gray-300 focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border border-neutral-300 focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                   placeholder="Seu telefone"
                   required
                 />
@@ -211,14 +204,14 @@ export function Form() {
             </div>
           </div>
 
-          <div className="bg-zinc-100 rounded-sm w-full">
+          <div className="bg-neutral-100 rounded-sm w-full">
             <div className="relative">
-              <PiIdentificationCard className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
+              <PiIdentificationCard className="text-neutral-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
               {isForeigner ?
                 <input
                   id="document"
                   type="text"
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                   placeholder="Seu documento estrangeiro"
                   value={user.document}
                   onChange={handleInputChange}
@@ -226,12 +219,13 @@ export function Form() {
                   maxLength={56}
                   minLength={4}
                 /> :
+                // @ts-ignore
                 <InputMask
                   id="document"
                   mask="999.999.999-99"
                   value={cpf}
                   onChange={handleCPFInputChange}
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                   placeholder="Seu CPF"
                   required
                 />
@@ -239,15 +233,16 @@ export function Form() {
             </div>
           </div>
 
-          <div className="w-full bg-zinc-100 rounded-sm">
+          <div className="w-full bg-neutral-100 rounded-sm">
             <div className="relative">
-              <MdOutlineDateRange className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
+              <MdOutlineDateRange className="text-neutral-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
+              {/* @ts-ignore */}
               <InputMask
                 id="birthDate"
                 mask="99/99/9999"
                 value={birthDate}
                 onChange={handleBirthDateInputChange}
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
+                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-primary focus:ring focus:ring-primary-300 focus:ring-opacity-50 transition duration-200"
                 placeholder="Sua data de aniversário"
                 required
               />
@@ -257,7 +252,7 @@ export function Form() {
           <button
             id="submit-user-data"
             type="submit"
-            className="text-white bg-violet-500 h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm hover:opacity-90 hover:transition-all"
+            className="text-white bg-primary h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm hover:opacity-90 hover:transition-all"
             disabled={loadingSubmit}
           >
             {loadingSubmit ? 'Enviando...' : 'Acessar o Quiz'}

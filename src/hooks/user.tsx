@@ -1,8 +1,6 @@
-import React, { ReactNode, createContext, useContext, useState, useEffect } from 'react'
+import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 
-import { quizAdminAPI, quizUserAPI } from '../services/api'
-
-export type AdminRole = 'master-admin' | 'default-admin'
+import { quizUserAPI } from '../services/api'
 
 export interface User {
   id?: string
@@ -14,15 +12,8 @@ export interface User {
   finalGrade?: number | null
   birthDate?: string | Date
   doLiveAbroad?: boolean
-  keywords?: string[]
   createdAt?: Date | null
   updatedAt?: Date | null
-}
-
-interface Admin {
-  id?: string
-  name?: string
-  email?: string
 }
 
 interface AuthContextData {
@@ -30,12 +21,8 @@ interface AuthContextData {
   setUserData: React.Dispatch<React.SetStateAction<UserAuthAccess>>
   userFinalGrade: number | null
   setUserFinalGrade: React.Dispatch<React.SetStateAction<number | null>>
-  adminData: AdminAuthAcess
-  setAdminData: React.Dispatch<React.SetStateAction<AdminAuthAcess>>
-  isPolicyChecked: boolean
-  setIsPolicyChecked: React.Dispatch<React.SetStateAction<boolean>>
-  certificate: string
-  setCertificate: React.Dispatch<React.SetStateAction<string>>
+  certificate: string | null
+  setCertificate: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 interface AuthProviderProps {
@@ -47,11 +34,6 @@ interface UserAuthAccess {
   token: string
 }
 
-interface AdminAuthAcess {
-  admin: Admin
-  token: string
-}
-
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 function UserProvider({ children }: AuthProviderProps) {
@@ -60,15 +42,8 @@ function UserProvider({ children }: AuthProviderProps) {
     token: '',
   })
 
-  const [adminData, setAdminData] = useState<AdminAuthAcess>({
-    admin: {},
-    token: '',
-  })
-
   const [userFinalGrade, setUserFinalGrade] = useState<number | null>(null)
-  const [isPolicyChecked, setIsPolicyChecked] = useState<boolean>(false)
-  const [certificate, setCertificate] = useState<string>('')
-  
+  const [certificate, setCertificate] = useState<string | null>(null)
 
   useEffect(() => {
     const token = localStorage.getItem('@quiz-devclub-v1:accessToken')
@@ -83,19 +58,6 @@ function UserProvider({ children }: AuthProviderProps) {
     }
   }, [])
 
-  useEffect(() => {
-    const adminToken = localStorage.getItem('@quiz-devclub-v1:adminAccessToken')
-    const admin = localStorage.getItem('@quiz-devclub-v1:admin')
-
-    if (adminToken && admin) {
-      quizAdminAPI.defaults.headers.common['Authorization'] = `Bearer ${adminToken}`
-      setAdminData({
-        admin: JSON.parse(admin),
-        token: adminToken,
-      })
-    }
-  }, [])
-
   return (
     <AuthContext.Provider
       value={{
@@ -103,12 +65,8 @@ function UserProvider({ children }: AuthProviderProps) {
         setUserData,
         userFinalGrade,
         setUserFinalGrade,
-        adminData,
-        setAdminData,
-        isPolicyChecked,
-        setIsPolicyChecked,
-        setCertificate,
         certificate,
+        setCertificate,
       }}
     >
       {children}
@@ -123,3 +81,4 @@ function useUser() {
 }
 
 export { UserProvider, useUser }
+
