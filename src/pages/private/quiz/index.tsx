@@ -37,7 +37,7 @@ export function Quiz() {
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({})
   const [quizData, setQuizData] = useState<Question[]>([])
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false)
-  const [keywords, setKeywords] = useState<string[]>(['', '', ''])
+  const [keywords, setKeywords] = useState<string[]>(['', '', '', ''])
 
   const navigate = useNavigate()
   const { userData, setUserFinalGrade, setCertificate } = useUser()
@@ -157,7 +157,7 @@ export function Quiz() {
           ))}
 
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-sm min-md:text-base font-bold mb-4">Quais são as 3 palavras chave?</h2>
+            <h2 className="text-sm min-md:text-base font-bold mb-4">Quais são as 4 palavras chave?</h2>
             <div className="space-y-4">
               {keywords.map((keyword, index) => (
                 <input
