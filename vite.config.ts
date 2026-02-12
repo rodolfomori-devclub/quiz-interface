@@ -7,5 +7,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
+  preview: {
+    port: Number(process.env.PORT) || 4173,
+    host: '0.0.0.0',
+    allowedHosts: true,
+  },
   plugins: [react()],
 })
