@@ -31,6 +31,7 @@ export function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<User>({})
   const [showModal, setShowModal] = useState<string>('#0')
   const [copied, setCopied] = useState<boolean>(false)
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
 
   const handleQueryUsers = async (): Promise<void> => {
     try {
@@ -117,37 +118,38 @@ export function AdminDashboard() {
     }, 2000)
   }
 
-  const handleDeleteUsers = async (): Promise<void> => {
-    const confirmDelete = window.confirm(
-      'Tem certeza que deseja excluir todos os usuários? Essa ação é irreversível!'
-    );
-
+  const handleDeleteUsers = (): void => {
     if (!users.length || !filteredUsers.length) {
       return
     }
+    setShowModal('#modal-delete')
+  }
 
-    if (confirmDelete) {
-      try {
-        const response = await quizAdminAPI('/admin/delete-users', {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${adminData?.token}`,
-          },
-        });
+  const confirmDeleteUsers = async (): Promise<void> => {
+    setLoadingDelete(true)
+    try {
+      const response = await quizAdminAPI('/admin/delete-users', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${adminData?.token}`,
+        },
+      });
 
-        if (response.status === 200) {
-          handleQueryUsers()
-          ToastifyDisplay({
-            toastType: 'success',
-            message: 'Usuário(s) excluído(s) com sucesso',
-          })();
-        }
-      } catch (error) {
+      if (response.status === 200) {
+        handleQueryUsers()
+        handleCloseModal()
         ToastifyDisplay({
-          toastType: 'error',
-          message: 'Erro ao excluir o(s) usuário(s). Tente novamente mais tarde.',
-        });
+          toastType: 'success',
+          message: 'Usuário(s) excluído(s) com sucesso',
+        })();
       }
+    } catch (error) {
+      ToastifyDisplay({
+        toastType: 'error',
+        message: 'Erro ao excluir o(s) usuário(s). Tente novamente mais tarde.',
+      });
+    } finally {
+      setLoadingDelete(false)
     }
   }
 
@@ -380,6 +382,47 @@ export function AdminDashboard() {
             {selectedUser?.alreadyFilledQuiz === false && <p className="text-sm text-zinc-600 mt-4">O QUIZ ainda não foi preenchido por esse usuário.</p>}
           </div>
         </Modal>
+      )}
+
+      {showModal === '#modal-delete' && (
+        <div className="fixed bottom-0 left-0 right-0 top-0 z-[999] flex items-center justify-center bg-black bg-opacity-85 max-md:px-5">
+          <div className="flex flex-col rounded-lg bg-white p-6 w-[420px] max-md:w-[90%]">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                <BiTrashAlt size={32} className="text-red-600" />
+              </div>
+              <h2 className="text-xl font-bold text-red-600 text-center">Excluir todos os usuarios?</h2>
+              <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 w-full">
+                <p className="text-red-700 font-semibold text-sm text-center">
+                  ATENCAO: Esta acao e IRREVERSIVEL!
+                </p>
+                <p className="text-red-600 text-xs text-center mt-1">
+                  Todos os <strong>{users.length} usuarios</strong> serao excluidos permanentemente. Nao sera possivel recuperar os dados depois.
+                </p>
+              </div>
+              <p className="text-zinc-500 text-xs text-center">
+                Certifique-se de ter exportado os dados antes de continuar.
+              </p>
+            </div>
+            <div className="flex gap-3 mt-5">
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                className="flex-1 h-11 rounded-lg border-2 border-zinc-300 text-zinc-600 font-semibold text-sm hover:bg-zinc-50 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteUsers}
+                disabled={loadingDelete}
+                className="flex-1 h-11 rounded-lg bg-red-600 text-white font-bold text-sm hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingDelete ? 'Excluindo...' : 'Sim, excluir tudo'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </>
