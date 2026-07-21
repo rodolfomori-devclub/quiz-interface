@@ -8,6 +8,15 @@ import { useNavigate } from "react-router-dom"
 import { quizUserAPI } from "../../../services/api"
 import { HandleAxiosAndGenericError, ToastifyDisplay } from "../../../utils"
 import { useUser } from "../../../hooks/user"
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Input,
+  cn,
+} from "@devclub/ui"
 
 interface RightAnswer {
   id: string
@@ -124,64 +133,76 @@ export function Quiz() {
     <div className="w-full min-h-screen">
       <PrivateHeader />
 
-      <div className="w-full h-full bg-gray-100 p-4">
+      <div className="w-full p-4">
 
-        <div className="w-full min-lg:max-w-[1063px] min-lg:mx-auto">
-          <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover mt-2 max-h-[270px]" />
+        <div className="mx-auto w-full max-w-5xl pt-4 md:pt-6">
+          <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover max-h-[270px] rounded-xl" />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8 pb-4 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
+        <form onSubmit={handleSubmit} className="mx-auto mt-6 flex w-full max-w-5xl flex-grow flex-col space-y-8 pb-4">
           {quizData.map((question) => (
-            <div key={question.id} className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-sm min-md:text-base font-bold mb-4">{question.question}</h2>
-              <div className="space-y-4">
-                {question.answers.map((answer) => (
-                  <label
-                    key={answer.id}
-                    className="flex items-center space-x-3 p-2 bg-gray-50 hover:bg-gray-100 rounded cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name={`question-${question.id}`}
-                      value={answer.id}
-                      checked={selectedAnswers[question.id] === answer.id}
-                      onChange={() => handleAnswerSelect(question.id, answer.id)}
-                      className="form-radio text-green-600"
-                      required
-                    />
-                    <span className="text-gray-700 text-sm min-md:text-base">{answer.description}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+            <Card key={question.id}>
+              <CardHeader>
+                <CardTitle className="font-display text-h5">{question.question}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {question.answers.map((answer) => {
+                  const isSelected = selectedAnswers[question.id] === answer.id
+                  return (
+                    <label
+                      key={answer.id}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors",
+                        isSelected
+                          ? "border-brand bg-brand-subtle"
+                          : "border-line bg-component hover:bg-surface-hover"
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name={`question-${question.id}`}
+                        value={answer.id}
+                        checked={isSelected}
+                        onChange={() => handleAnswerSelect(question.id, answer.id)}
+                        className="h-4 w-4 shrink-0 accent-brand"
+                        required
+                      />
+                      <span className="text-copy-sm text-fg md:text-copy">{answer.description}</span>
+                    </label>
+                  )
+                })}
+              </CardContent>
+            </Card>
           ))}
 
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-sm min-md:text-base font-bold mb-4">Quais são as 4 palavras chave?</h2>
-            <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-display text-h5">Quais são as 4 palavras chave?</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               {keywords.map((keyword, index) => (
-                <input
+                <Input
                   key={index}
                   type="text"
                   value={keyword}
                   onChange={(e) => handleKeywordChange(index, e.target.value)}
                   placeholder={`Palavra chave aula ${index + 1}`}
-                  className="w-full p-2 rounded outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200 text-sm"
                   required
                   autoComplete="off"
                 />
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="w-full min-md:flex min-md:justify-center">
-            <button
+          <div className="w-full md:flex md:justify-center">
+            <Button
               type="submit"
-              className="w-full py-3 bg-violet-500 text-white font-bold rounded-lg shadow hover:opacity-90 hover:transition-all transition duration-300 mt-8 min-md:w-[50%]"
-              disabled={loadingSubmit}
+              size="lg"
+              loading={loadingSubmit}
+              className="mt-8 w-full md:w-1/2"
             >
               {loadingSubmit ? 'Enviando respostas...' : 'Enviar Respostas'}
-            </button>
+            </Button>
           </div>
 
         </form>

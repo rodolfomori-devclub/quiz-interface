@@ -18,6 +18,19 @@ import { HandleAxiosAndGenericError, ToastifyDisplay } from '../../../utils'
 
 import InputMask from 'react-input-mask'
 
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Field,
+  FieldLabel,
+  FieldControl,
+  Input,
+  inputVariants,
+} from '@devclub/ui'
+
 interface User {
   name: string
   email: string
@@ -81,7 +94,7 @@ export function Form() {
 
           quizUserAPI.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
-          navigate('/quiz')
+          navigate('/feedback')
         }
       } catch (error) {
         const handleError = await HandleAxiosAndGenericError(error)
@@ -129,141 +142,176 @@ export function Form() {
     }
   }, [currentPath])
 
+  const maskClassName = inputVariants({ inputSize: 'md' })
+
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Header />
 
-      <div className="w-full min-lg:max-w-[515px] min-lg:mx-auto">
-        <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover mt-2 max-h-[270px]" />
-      </div>
-
-      <form className="w-full mt-4 flex-grow min-xs:max-w-[515px] min-xs:mx-auto" onSubmit={handleSubmit}>
-        <h4 className="text-sm text-violet-500 font-bold text-center">Preencha seus dados para continuar</h4>
-
-        <div className="p-5 flex flex-col gap-3 justify-center">
-          <div className="flex items-center gap-1 w-full justify-center">
-            <input
-              type="checkbox"
-              checked={isForeigner}
-              onChange={handleCheckboxChange}
-            />
-            <p className="text-zinc-600 text-sm">Sou estrangeiro</p>
-          </div>
-
-          <div className="bg-zinc-100 rounded-sm w-full">
-            <div className="relative">
-              <RiUser3Line className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
-              <input
-                id="name"
-                type="text"
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                placeholder="Seu nome completo"
-                value={user.name}
-                onChange={handleInputChange}
-                required
-                maxLength={128}
-                minLength={3}
-              />
-            </div>
-          </div>
-
-          <div className=" bg-zinc-100 rounded-sm w-full">
-            <div className="relative">
-              <MdOutlineEmail className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
-              <input
-                id="email"
-                type="email"
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                placeholder="Seu e-mail"
-                value={user.email}
-                onChange={handleInputChange}
-                required
-                maxLength={128}
-              />
-            </div>
-          </div>
-
-          <div className="bg-zinc-100 rounded-sm w-full">
-            <div className="relative">
-              <LuPhone className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={22} />
-              {isForeigner ?
-                <input
-                  id="phone"
-                  type="text"
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                  placeholder="Seu Telefone + código do país"
-                  value={user.phone}
-                  onChange={handleInputChange}
-                  required
-                  maxLength={86}
-                  minLength={6}
-                /> :
-                <InputMask
-                  id="phone"
-                  mask="(99) 99999-9999"
-                  value={brPhone}
-                  onChange={handleBRNumberInputChange}
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border border-gray-300 focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                  placeholder="Seu telefone"
-                  required
-                />
-              }
-            </div>
-          </div>
-
-          <div className="bg-zinc-100 rounded-sm w-full">
-            <div className="relative">
-              <PiIdentificationCard className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
-              {isForeigner ?
-                <input
-                  id="document"
-                  type="text"
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                  placeholder="Seu documento estrangeiro"
-                  value={user.document}
-                  onChange={handleInputChange}
-                  required
-                  maxLength={56}
-                  minLength={4}
-                /> :
-                <InputMask
-                  id="document"
-                  mask="999.999.999-99"
-                  value={cpf}
-                  onChange={handleCPFInputChange}
-                  className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                  placeholder="Seu CPF"
-                  required
-                />
-              }
-            </div>
-          </div>
-
-          <div className="w-full bg-zinc-100 rounded-sm">
-            <div className="relative">
-              <MdOutlineDateRange className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
-              <InputMask
-                id="birthDate"
-                mask="99/99/9999"
-                value={birthDate}
-                onChange={handleBirthDateInputChange}
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                placeholder="Sua data de aniversário"
-                required
-              />
-            </div>
-          </div>
-
-          <button
-            id="submit-user-data"
-            type="submit"
-            className="text-white bg-violet-500 h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm hover:opacity-90 hover:transition-all"
-            disabled={loadingSubmit}
-          >
-            {loadingSubmit ? 'Enviando...' : 'Acessar o Quiz'}
-          </button>
+      <main className="w-full flex-grow">
+        <div className="mx-auto w-full max-w-lg px-4 pt-10 md:pt-14">
+          <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover max-h-[270px] rounded-xl" />
         </div>
-      </form>
+
+        <div className="mx-auto w-full max-w-lg px-4 py-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-display text-center">Preencha seus dados para continuar</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                <label className="flex items-center justify-center gap-2 select-none text-copy-sm text-fg-subtle">
+                  <input
+                    type="checkbox"
+                    checked={isForeigner}
+                    onChange={handleCheckboxChange}
+                    className="size-4 accent-brand"
+                  />
+                  <span>Sou estrangeiro</span>
+                </label>
+
+                <Field>
+                  <FieldLabel className="flex items-center gap-2">
+                    <RiUser3Line className="text-fg-muted" size={18} />
+                    Nome completo
+                  </FieldLabel>
+                  <FieldControl>
+                    <Input
+                      id="name"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Seu nome completo"
+                      value={user.name}
+                      onChange={handleInputChange}
+                      required
+                      maxLength={128}
+                      minLength={3}
+                    />
+                  </FieldControl>
+                </Field>
+
+                <Field>
+                  <FieldLabel className="flex items-center gap-2">
+                    <MdOutlineEmail className="text-fg-muted" size={18} />
+                    E-mail
+                  </FieldLabel>
+                  <FieldControl>
+                    <Input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      inputMode="email"
+                      placeholder="Seu e-mail"
+                      value={user.email}
+                      onChange={handleInputChange}
+                      required
+                      maxLength={128}
+                    />
+                  </FieldControl>
+                </Field>
+
+                <Field>
+                  <FieldLabel className="flex items-center gap-2">
+                    <LuPhone className="text-fg-muted" size={18} />
+                    Telefone
+                  </FieldLabel>
+                  <FieldControl>
+                    {isForeigner ?
+                      <Input
+                        id="phone"
+                        type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        placeholder="Seu Telefone + código do país"
+                        value={user.phone}
+                        onChange={handleInputChange}
+                        required
+                        maxLength={86}
+                        minLength={6}
+                      /> :
+                      <InputMask
+                        id="phone"
+                        mask="(99) 99999-9999"
+                        value={brPhone}
+                        onChange={handleBRNumberInputChange}
+                        className={maskClassName}
+                        type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        placeholder="Seu telefone"
+                        required
+                      />
+                    }
+                  </FieldControl>
+                </Field>
+
+                <Field>
+                  <FieldLabel className="flex items-center gap-2">
+                    <PiIdentificationCard className="text-fg-muted" size={18} />
+                    {isForeigner ? 'Documento' : 'CPF'}
+                  </FieldLabel>
+                  <FieldControl>
+                    {isForeigner ?
+                      <Input
+                        id="document"
+                        type="text"
+                        placeholder="Seu documento estrangeiro"
+                        value={user.document}
+                        onChange={handleInputChange}
+                        required
+                        maxLength={56}
+                        minLength={4}
+                      /> :
+                      <InputMask
+                        id="document"
+                        mask="999.999.999-99"
+                        value={cpf}
+                        onChange={handleCPFInputChange}
+                        className={maskClassName}
+                        inputMode="numeric"
+                        placeholder="Seu CPF"
+                        required
+                      />
+                    }
+                  </FieldControl>
+                </Field>
+
+                <Field>
+                  <FieldLabel className="flex items-center gap-2">
+                    <MdOutlineDateRange className="text-fg-muted" size={18} />
+                    Data de nascimento
+                  </FieldLabel>
+                  <FieldControl>
+                    <InputMask
+                      id="birthDate"
+                      mask="99/99/9999"
+                      value={birthDate}
+                      onChange={handleBirthDateInputChange}
+                      className={maskClassName}
+                      autoComplete="bday"
+                      inputMode="numeric"
+                      placeholder="Sua data de aniversário"
+                      required
+                    />
+                  </FieldControl>
+                </Field>
+
+                <Button
+                  id="submit-user-data"
+                  type="submit"
+                  size="lg"
+                  loading={loadingSubmit}
+                  disabled={loadingSubmit}
+                  className="w-full mt-2"
+                >
+                  {loadingSubmit ? 'Enviando...' : 'Acessar o Quiz'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
 
       <Footer />
     </div>

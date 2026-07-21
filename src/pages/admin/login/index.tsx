@@ -2,8 +2,18 @@ import { FormEventHandler, useState } from "react"
 
 import { Header } from "../../../components/Header"
 
-import { MdOutlineEmail } from "react-icons/md"
-import { RiLockPasswordLine } from "react-icons/ri"
+import { Mail, Lock } from "lucide-react"
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Field,
+  FieldLabel,
+  FieldControl,
+  Input,
+} from "@devclub/ui"
 
 import { useUser } from "../../../hooks/user"
 import { useNavigate } from "react-router-dom"
@@ -70,49 +80,66 @@ export function AdminLogin() {
     <div className="w-full min-h-screen">
       <Header />
 
-      <div className="w-full p-4 flex-grow min-lg:max-w-[415px] min-lg:mx-auto mt-40">
-        <form onSubmit={handleSubmit} id="admin-login-form" className="w-full mt-4 flex-grow min-xs:max-w-[415px] min-xs:mx-auto flex flex-col gap-4">
-          <div className=" bg-zinc-100 rounded-sm w-full">
-            <div className="relative">
-              <MdOutlineEmail className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
-              <input
-                id="email"
-                type="email"
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                placeholder="Seu e-mail"
-                value={admin.email}
-                onChange={handleInputChange}
-                required
-                maxLength={128}
-              />
-            </div>
-          </div>
+      <div className="mx-auto w-full max-w-sm px-4 mt-40">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-display">Acesso administrativo</CardTitle>
+          </CardHeader>
 
-          <div className=" bg-zinc-100 rounded-sm w-full">
-            <div className="relative">
-              <RiLockPasswordLine className="text-zinc-500 absolute left-2 top-1/2 -translate-y-1/2 transform" size={24} />
-              <input
-                id="password"
-                type="password"
-                className="h-12 w-full text-sm rounded-sm bg-transparent pl-9 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                placeholder="Senha"
-                value={admin.password}
-                onChange={handleInputChange}
-                required
-                maxLength={128}
-              />
-            </div>
-          </div>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit}
+              id="admin-login-form"
+              className="flex flex-col gap-4"
+            >
+              <Field>
+                <FieldLabel className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-fg-muted" aria-hidden="true" />
+                  E-mail
+                </FieldLabel>
+                <FieldControl>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Seu e-mail"
+                    value={admin.email}
+                    onChange={handleInputChange}
+                    required
+                    maxLength={128}
+                  />
+                </FieldControl>
+              </Field>
 
-          <button
-            id="admin-login"
-            type="submit"
-            className="text-white bg-violet-500 h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm"
-            disabled={loadingSubmit}
-          >
-            {loadingSubmit ? 'Enviando...' : 'Entrar'}
-          </button>
-        </form>
+              <Field>
+                <FieldLabel className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-fg-muted" aria-hidden="true" />
+                  Senha
+                </FieldLabel>
+                <FieldControl>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Senha"
+                    value={admin.password}
+                    onChange={handleInputChange}
+                    required
+                    maxLength={128}
+                  />
+                </FieldControl>
+              </Field>
+
+              <Button
+                id="admin-login"
+                type="submit"
+                size="lg"
+                loading={loadingSubmit}
+                className="mt-2 w-full"
+              >
+                {loadingSubmit ? 'Enviando...' : 'Entrar'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

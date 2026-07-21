@@ -1,7 +1,12 @@
 import { useNavigate } from "react-router-dom"
+import { LogOut } from "lucide-react"
+
+import { Badge } from "@devclub/ui"
 
 import { useUser } from "../../hooks/user"
 import { quizAdminAPI } from "../../services/api"
+import { Wordmark } from "../Wordmark"
+import { BrandControls } from "../BrandControls"
 
 export const AdminPrivateHeader = () => {
   const { setAdminData } = useUser()
@@ -25,17 +30,26 @@ export const AdminPrivateHeader = () => {
   }
 
   return (
-    <header className="w-full h-[150px] border-t-4 border-violet-500 mx-auto flex flex-col justify-center gap-4 min-md:max-w-[720px]">
-      <div className="w-full">
-        <h2 className="text-xl font-semibold text-violet-600 text-center uppercase">Desafio do</h2>
-        <h1 className="font-semibold uppercase tracking-[0.2rem] text-2xl text-center"><b className="text-slate-900">QUIZ</b></h1>
-      </div>
+    <header className="w-full border-t-2 border-brand">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-4">
+        <div className="flex items-center gap-3">
+          <Wordmark size="sm" />
+          <Badge variant="brand" className="hidden sm:inline-flex">admin</Badge>
+        </div>
 
-      <div className="w-full flex justify-end px-5 min-md:px-0">
-        <span className="self-end items-end justify-end">
-          <button onClick={() => handleSignOut()} type="button" className="uppercase text-zinc-600 text-sm font-semibold hover:opacity-80 hover:transition-all">Sair</button>
-        </span>
+        <div className="flex items-center gap-2">
+          <BrandControls />
+          <button
+            onClick={() => handleSignOut()}
+            type="button"
+            className="inline-flex items-center gap-1.5 text-label font-medium uppercase tracking-caps text-fg-subtle transition-colors hover:text-fg-brand"
+          >
+            <LogOut className="size-4" />
+            Sair
+          </button>
+        </div>
       </div>
+      <div className="border-b border-line" />
     </header>
   )
 }

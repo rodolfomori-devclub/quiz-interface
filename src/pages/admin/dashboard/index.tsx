@@ -4,19 +4,46 @@ import { User, useUser } from "../../../hooks/user"
 import { ToastifyDisplay } from "../../../utils"
 import { quizAdminAPI } from "../../../services/api"
 
-import { Modal } from "../../../components/Modal"
 import { AdminPrivateHeader } from "../../../components/AdminPrivateHeader"
+import { feedbackToReadable } from "../../../utils/eventFeedback"
+import { FeedbackResults } from "./FeedbackResults"
 
-import { FaRegCopy } from "react-icons/fa"
-import { BsFiletypeXlsx } from "react-icons/bs"
-import { VscErrorSmall } from "react-icons/vsc"
-import { BiTrashAlt } from "react-icons/bi";
-import { RiSendPlane2Line } from "react-icons/ri"
-import { ImSpinner3, ImCheckboxChecked } from "react-icons/im"
+import {
+  Button,
+  IconButton,
+  Input,
+  StatCard,
+  Spinner,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@devclub/ui"
+
+import {
+  Trash2,
+  FileSpreadsheet,
+  Send,
+  Copy,
+  CheckSquare,
+  CircleX,
+  Users,
+} from "lucide-react"
 
 import * as XLSX from 'xlsx'
 
-type MenuOptions = 'dashboard' | 'Q&A'
+type MenuOptions = 'dashboard' | 'feedback' | 'Q&A'
 
 export function AdminDashboard() {
   const { adminData } = useUser()
@@ -53,14 +80,25 @@ export function AdminDashboard() {
 
   const exportToXLSX = (): void => {
     const worksheet = XLSX.utils.json_to_sheet(
-      filteredUsers.map((user, index) => ({
-        "#": index + 1,
-        "Nome Completo": user.name,
-        "CPF": user.document,
-        "Telefone": user.phone,
-        "Nota": user.finalGrade !== null ? user.finalGrade : 'Não preenchido',
-        "Palavras-chave": user?.keywords!.length > 0 ? user?.keywords!.join(', ') : 'Nenhuma',
-      }))
+      filteredUsers.map((user, index) => {
+        const fb = feedbackToReadable(user.eventFeedback)
+        return {
+          "#": index + 1,
+          "Nome Completo": user.name,
+          "CPF": user.document,
+          "Telefone": user.phone,
+          "Nota": user.finalGrade !== null ? user.finalGrade : 'Não preenchido',
+          "Palavras-chave": user?.keywords!.length > 0 ? user?.keywords!.join(', ') : 'Nenhuma',
+          "NPS (0-10)": fb.nps,
+          "Aulas assistidas": fb.attendance,
+          "Formato": fb.consumptionFormat,
+          "O que marcou": fb.highlight,
+          "Sentimento pós-evento": fb.transformation,
+          "Status DevClub": fb.devclubStatus,
+          "Obstáculo": fb.obstacle,
+          "Sugestão de melhoria": fb.improvement,
+        }
+      })
     )
 
     const workbook = XLSX.utils.book_new()
@@ -88,11 +126,7 @@ export function AdminDashboard() {
   }
 
   const handleChangeMenuType = (menuType: MenuOptions): void => {
-    if (menuType === 'dashboard') {
-      setMenuOptions('dashboard')
-    } else if (menuType === 'Q&A') {
-      setMenuOptions('Q&A')
-    }
+    setMenuOptions(menuType)
   }
 
   const handleModal = (user: User): void => {
@@ -107,6 +141,11 @@ export function AdminDashboard() {
   const handleKeywordsModal = (user: User): void => {
     setSelectedUser(user)
     setShowModal('#modal-keywords')
+  }
+
+  const handleFeedbackModal = (user: User): void => {
+    setSelectedUser(user)
+    setShowModal('#modal-feedback')
   }
 
   const handleCopyPhone = (): void => {
@@ -157,221 +196,281 @@ export function AdminDashboard() {
     handleQueryUsers()
   }, [])
 
-  console.log(showModal)
-
   return (
     <>
       <div className="w-full min-h-screen">
         <AdminPrivateHeader />
-        <div className="w-full p-4 flex-grow min-lg:max-w-[940px] min-lg:mx-auto mt-5">
-          <div className="flex items-center justify-between">
 
-            <ul className="flex items-center gap-4 overflow-x-auto px-1">
-              <li onClick={() => handleChangeMenuType('dashboard')} className={`font-semibold text-zinc-600 hover:opacity-80 hover:transition-all cursor-pointer px-1 ${menuOptions === 'dashboard' && 'bg-violet-200 rounded-md'}`}>Dashboard</li>
-              <li onClick={() => handleChangeMenuType('Q&A')} className={`font-semibold text-zinc-600 hover:opacity-80 hover:transition-all cursor-pointer px-1 ${menuOptions === 'Q&A' && 'bg-violet-200 rounded-md'}`}>Q&A</li>
-            </ul>
-            <div className="flex items-center gap-2">
-              <BiTrashAlt onClick={handleDeleteUsers} size={22} className="text-zinc-600 cursor-pointer hover:opacity-80 transition-all" title="Excluir todos os usuários" />
-              <BsFiletypeXlsx size={20} className="text-zinc-600 cursor-pointer hover:opacity-80 transition-all" title="Exportar tabela de usuários" onClick={exportToXLSX} />
+        <div className="mx-auto mt-5 w-full max-w-5xl px-4">
+          <Tabs value={menuOptions} onValueChange={(value) => handleChangeMenuType(value as MenuOptions)}>
+            <div className="flex items-center justify-between gap-4">
+              <TabsList>
+                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                <TabsTrigger value="feedback">Pré-quiz</TabsTrigger>
+                <TabsTrigger value="Q&A">Q&A</TabsTrigger>
+              </TabsList>
+
+              <div className="flex items-center gap-1">
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  label="Excluir todos os usuários"
+                  title="Excluir todos os usuários"
+                  onClick={handleDeleteUsers}
+                >
+                  <Trash2 />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  label="Exportar tabela de usuários"
+                  title="Exportar tabela de usuários"
+                  onClick={exportToXLSX}
+                >
+                  <FileSpreadsheet />
+                </IconButton>
+              </div>
             </div>
-          </div>
-          <hr />
 
-          {menuOptions === 'dashboard' && (
-            <>
-              <div className="mt-4 flex flex-col gap-4">
-                <p className="text-zinc-600 text-sm min-lg:text-base">
-                  Qtd. Total: <strong>({filteredUsers?.length})</strong>
-                </p>
+            <TabsContent value="dashboard">
+              <div className="flex flex-col gap-4">
+                <StatCard
+                  label="Qtd. Total"
+                  value={filteredUsers?.length ?? 0}
+                  icon={<Users />}
+                  className="max-w-xs"
+                />
+
                 <div className="flex items-center gap-2">
-                  <input
+                  <Input
                     type="text"
+                    inputSize="sm"
                     value={searchUser}
                     onChange={e => setSearchUser(e.target.value)}
                     placeholder="Pesquisar por nome de usuário..."
-                    className="text-xs border bg-slate-100 p-1 w-80 outline-none pl-2 pr-4 h-8"
+                    className="w-full sm:w-80"
                     maxLength={128}
                     autoComplete="true"
                   />
 
                   {loadingFilter ?
-                    <ImSpinner3 size={18} className="text-zinc-600 animate-spin" />
+                    <Spinner className="size-5 text-fg-muted" />
                     :
-                    <button id="search-user-button" type="button" onClick={handleSearch}>
-                      <RiSendPlane2Line
-                        size={20}
-                        className="text-zinc-600 cursor-pointer hover:opacity-80 transition-all"
-                        title="Pesquisar"
-                      />
-                    </button>
+                    <IconButton
+                      id="search-user-button"
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      label="Pesquisar"
+                      title="Pesquisar"
+                      onClick={handleSearch}
+                    >
+                      <Send />
+                    </IconButton>
                   }
                 </div>
               </div>
 
-              <div className="w-full overflow-x-auto mt-4">
-                <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                  <thead>
-                    <tr>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">#</th>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Nome</th>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">CPF</th>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Telefone</th>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Nota QUIZ</th>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Palavras-chave</th>
-                      <th className="py-2 px-4 border border-gray-200 text-left text-sm min-lg:text-base text-zinc-700">Detalhes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <div className="mt-4 rounded-xl border border-line bg-surface">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>#</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>CPF</TableHead>
+                      <TableHead>Telefone</TableHead>
+                      <TableHead>Nota QUIZ</TableHead>
+                      <TableHead>Palavras-chave</TableHead>
+                      <TableHead>Feedback</TableHead>
+                      <TableHead>Detalhes</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {filteredUsers.map((user, index) => (
-                      <tr key={user.id} className="hover:opacity-60 hover:transition-all">
-                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base ">{index + 1}</td>
-                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base max-w-[280px] truncate">{user.name}</td>
-                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base">{user.document!.slice(0, 3)}***</td>
-                        <td className="py-2 px-4 border border-gray-200 text-sm min-lg:text-base">{user.phone!.slice(0, 7)}****</td>
-                        <td className="py-2 px-4 border border-gray-200 text-xs min-lg:text-sm">{user.finalGrade !== -1 ? user.finalGrade : 'Não preenchido'}</td>
-                        <td className="py-2 px-4 border border-gray-200 text-xs min-lg:text-sm cursor-pointer text-center" onClick={() => handleKeywordsModal(user)}>Ver</td>
-                        <td className="py-2 px-4 border border-gray-200 text-xs min-lg:text-sm cursor-pointer text-center" onClick={() => handleModal(user)}>Ver</td>
-                      </tr>
+                      <TableRow key={user.id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="max-w-[280px] truncate">{user.name}</TableCell>
+                        <TableCell className="font-mono">{user.document!.slice(0, 3)}***</TableCell>
+                        <TableCell className="font-mono">{user.phone!.slice(0, 7)}****</TableCell>
+                        <TableCell className="font-mono">{user.finalGrade !== -1 ? user.finalGrade : 'Não preenchido'}</TableCell>
+                        <TableCell className="text-center">
+                          <span
+                            className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
+                            onClick={() => handleKeywordsModal(user)}
+                          >
+                            Ver
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {user.eventFeedback ? (
+                            <span
+                              className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
+                              onClick={() => handleFeedbackModal(user)}
+                            >
+                              Ver
+                            </span>
+                          ) : (
+                            <span className="text-fg-muted">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span
+                            className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
+                            onClick={() => handleModal(user)}
+                          >
+                            Ver
+                          </span>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
-            </>
-          )}
+            </TabsContent>
 
-          {menuOptions === 'Q&A' && (
-            <div className="mt-4 flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-zinc-600 font-semibold">Adicionar Perguntas</h3>
-                <p className="text-xs font-semibold text-zinc-600">Marque se a alternativa é <b>verdadeira</b> ou <b>falsa</b> pelos ícones ao lado do texto</p>
+            <TabsContent value="feedback">
+              <FeedbackResults users={users} onOpenIndividual={handleFeedbackModal} />
+            </TabsContent>
+
+            <TabsContent value="Q&A">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-h5 font-semibold text-fg">Adicionar Perguntas</h3>
+                  <p className="text-copy-sm text-fg-subtle">Marque se a alternativa é <b>verdadeira</b> ou <b>falsa</b> pelos ícones ao lado do texto</p>
+                </div>
+                <form onSubmit={() => { }} className="flex flex-col gap-4">
+                  <label htmlFor="" className="flex flex-col gap-1.5">
+                    <span className="text-label font-medium text-fg">Questão</span>
+                    <Input
+                      id="question-input"
+                      type="text"
+                      inputSize="lg"
+                      placeholder="digite a pergunta aqui"
+                      required
+                    />
+                  </label>
+
+                  <label htmlFor="" className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between max-w-[180px]">
+                      <span className="text-label font-medium text-fg">Alternativa #1</span>
+                      <div id="alternative-1" className="flex items-center gap-1">
+                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
+                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
+                      </div>
+                    </div>
+                    <Input
+                      id="choise-input-1"
+                      type="text"
+                      inputSize="lg"
+                      placeholder="digite uma alternativa aqui"
+                      required
+                    />
+                  </label>
+
+                  <label htmlFor="" className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between max-w-[180px]">
+                      <span className="text-label font-medium text-fg">Alternativa #2</span>
+                      <div id="alternative-2" className="flex items-center gap-1">
+                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
+                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
+                      </div>
+                    </div>
+                    <Input
+                      id="choise-input-2"
+                      type="text"
+                      inputSize="lg"
+                      placeholder="digite uma alternativa aqui"
+                      required
+                    />
+                  </label>
+
+                  <label htmlFor="" className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between max-w-[180px]">
+                      <span className="text-label font-medium text-fg">Alternativa #3</span>
+                      <div id="alternative-3" className="flex items-center gap-1">
+                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
+                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
+                      </div>
+                    </div>
+                    <Input
+                      id="choise-input-3"
+                      type="text"
+                      inputSize="lg"
+                      placeholder="digite uma alternativa aqui"
+                      required
+                    />
+                  </label>
+
+                  <label htmlFor="" className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between max-w-[180px]">
+                      <span className="text-label font-medium text-fg">Alternativa #4</span>
+                      <div id="alternative-4" className="flex items-center gap-1">
+                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
+                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
+                      </div>
+                    </div>
+                    <Input
+                      id="choise-input-4"
+                      type="text"
+                      inputSize="lg"
+                      placeholder="digite uma alternativa aqui"
+                      required
+                    />
+                  </label>
+
+                  <label htmlFor="" className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between max-w-[265px]">
+                      <span className="text-label font-medium text-fg">Alternativa #5 (opcional)</span>
+                      <div id="alternative-5" className="flex items-center gap-1">
+                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
+                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
+                      </div>
+                    </div>
+                    <Input
+                      id="choise-input-5"
+                      type="text"
+                      inputSize="lg"
+                      placeholder="digite uma alternativa aqui"
+                    />
+                  </label>
+
+                  <div className="mt-4 md:flex md:justify-center">
+                    <Button type="submit" size="lg" className="w-full md:max-w-[60%]">
+                      Cadastrar Q&A
+                    </Button>
+                  </div>
+                </form>
               </div>
-              <form onSubmit={() => { }} className="flex flex-col gap-4">
-                <label htmlFor="" className="flex flex-col gap-1">
-                  <p className="text-zinc-600 font-semibold">Questão</p>
-                  <input
-                    id="question-input"
-                    type="text"
-                    className="h-12 w-full text-sm rounded-sm bg-transparent pl-2 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                    placeholder="digite a pergunta aqui"
-                    required
-                  />
-                </label>
-
-                <label htmlFor="" className="flex flex-col">
-                  <div className="flex items-center justify-between max-w-[180px]">
-                    <p className="text-zinc-600 font-semibold">Alternativa #1</p>
-                    <div id="alternative-1" className="flex items-center gap-1">
-                      <ImCheckboxChecked size={15} id="correct" className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                      <VscErrorSmall id="wrong" size={32} className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                    </div>
-                  </div>
-                  <input
-                    id="choise-input-1"
-                    type="text"
-                    className="h-12 w-full text-sm rounded-sm bg-transparent pl-2 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                    placeholder="digite uma alternativa aqui"
-                    required
-                  />
-                </label>
-
-                <label htmlFor="" className="flex flex-col">
-                  <div className="flex items-center justify-between max-w-[180px]">
-                    <p className="text-zinc-600 font-semibold">Alternativa #2</p>
-                    <div id="alternative-2" className="flex items-center gap-1">
-                      <ImCheckboxChecked size={15} id="correct" className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                      <VscErrorSmall id="wrong" size={32} className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                    </div>
-                  </div>
-                  <input
-                    id="choise-input-2"
-                    type="text"
-                    className="h-12 w-full text-sm rounded-sm bg-transparent pl-2 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                    placeholder="digite uma alternativa aqui"
-                    required
-                  />
-                </label>
-
-                <label htmlFor="" className="flex flex-col">
-                  <div className="flex items-center justify-between max-w-[180px]">
-                    <p className="text-zinc-600 font-semibold">Alternativa #3</p>
-                    <div id="alternative-3" className="flex items-center gap-1">
-                      <ImCheckboxChecked size={15} id="correct" className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                      <VscErrorSmall id="wrong" size={32} className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                    </div>
-                  </div>
-                  <input
-                    id="choise-input-3"
-                    type="text"
-                    className="h-12 w-full text-sm rounded-sm bg-transparent pl-2 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                    placeholder="digite uma alternativa aqui"
-                    required
-                  />
-                </label>
-
-                <label htmlFor="" className="flex flex-col">
-                  <div className="flex items-center justify-between max-w-[180px]">
-                    <p className="text-zinc-600 font-semibold">Alternativa #4</p>
-                    <div id="alternative-4" className="flex items-center gap-1">
-                      <ImCheckboxChecked size={15} id="correct" className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                      <VscErrorSmall id="wrong" size={32} className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                    </div>
-                  </div>
-                  <input
-                    id="choise-input-4"
-                    type="text"
-                    className="h-12 w-full text-sm rounded-sm bg-transparent pl-2 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                    placeholder="digite uma alternativa aqui"
-                    required
-                  />
-                </label>
-
-                <label htmlFor="" className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between max-w-[265px]">
-                    <p className="text-zinc-600 font-semibold">Alternativa #5 (opcional)</p>
-                    <div id="alternative-5" className="flex items-center gap-1">
-                      <ImCheckboxChecked size={15} id="correct" className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                      <VscErrorSmall id="wrong" size={32} className="text-zinc-400 cursor-pointer hover:opacity-80 hover:transition-all" />
-                    </div>
-                  </div>
-                  <input
-                    id="choise-input-5"
-                    type="text"
-                    className="h-12 w-full text-sm rounded-sm bg-transparent pl-2 pr-4 font-semibold outline-none border focus:border-violet-500 focus:ring focus:ring-violet-300 focus:ring-opacity-50 transition duration-200"
-                    placeholder="digite uma alternativa aqui"
-                  />
-                </label>
-
-                <label htmlFor="" className="min-md:flex min-md:justify-center">
-                  <button type="submit" className="text-white bg-violet-500 h-14 rounded-sm shadow-sm w-full mt-4 font-bold uppercase text-sm hover:opacity-90 hover:transition-all min-md:max-w-[60%]">
-                    Cadastrar Q&A
-                  </button>
-                </label>
-              </form>
-            </div>
-          )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
-      {showModal === '#modal-details' && (
-        <Modal title="Detalhes do usuário" isOpen={showModal} onClose={handleCloseModal} className="w-[350px] h-[150px]">
+      <Dialog open={showModal === '#modal-details'} onOpenChange={(open) => { if (!open) handleCloseModal() }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Detalhes do usuário</DialogTitle>
+          </DialogHeader>
           <div className="w-full flex flex-col gap-2">
-            <h3 className="text-zinc-600">{selectedUser?.name}</h3>
-            <button type="button" onClick={handleCopyPhone} className="w-full flex items-center gap-2 hover:opacity-80 hover:transition-all">
-              <p className="text-zinc-400">{selectedUser?.phone}</p>
-              <FaRegCopy className="text-zinc-400" />
-              {copied && <span className="text-green-500 text-sm">Número copiado!</span>}
+            <h3 className="text-fg">{selectedUser?.name}</h3>
+            <button type="button" onClick={handleCopyPhone} className="w-full flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <p className="font-mono text-fg-subtle">{selectedUser?.phone}</p>
+              <Copy className="size-4 text-fg-muted" />
+              {copied && <span className="text-success-fg text-copy-sm">Número copiado!</span>}
             </button>
-
           </div>
-        </Modal>
-      )}
+        </DialogContent>
+      </Dialog>
 
-      {showModal === '#modal-keywords' && (
-        <Modal title="Detalhes" isOpen={showModal} onClose={handleCloseModal} className="w-[350px] h-[150px]">
-          <div className="mt-4">
-            <h3 className="text-zinc-600 font-semibold">Palavras-chave que foram cadastradas no QUIZ:</h3>
+      <Dialog open={showModal === '#modal-keywords'} onOpenChange={(open) => { if (!open) handleCloseModal() }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Detalhes</DialogTitle>
+          </DialogHeader>
+          <div>
+            <h3 className="font-semibold text-fg">Palavras-chave que foram cadastradas no QUIZ:</h3>
 
-            <ul className="mt-2 flex flex-col gap-2">
+            <ul className="mt-2 flex flex-col gap-2 text-fg">
               {selectedUser?.keywords?.map((keyword, index) => {
                 return (
                   <li key={index}>Palavra-chave {<b>{index + 1}</b>} - {keyword}</li>
@@ -379,52 +478,85 @@ export function AdminDashboard() {
               })}
             </ul>
 
-            {selectedUser?.alreadyFilledQuiz === false && <p className="text-sm text-zinc-600 mt-4">O QUIZ ainda não foi preenchido por esse usuário.</p>}
+            {selectedUser?.alreadyFilledQuiz === false && <p className="text-copy-sm text-fg-subtle mt-4">O QUIZ ainda não foi preenchido por esse usuário.</p>}
           </div>
-        </Modal>
-      )}
+        </DialogContent>
+      </Dialog>
 
-      {showModal === '#modal-delete' && (
-        <div className="fixed bottom-0 left-0 right-0 top-0 z-[999] flex items-center justify-center bg-black bg-opacity-85 max-md:px-5">
-          <div className="flex flex-col rounded-lg bg-white p-6 w-[420px] max-md:w-[90%]">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                <BiTrashAlt size={32} className="text-red-600" />
-              </div>
-              <h2 className="text-xl font-bold text-red-600 text-center">Excluir todos os usuarios?</h2>
-              <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 w-full">
-                <p className="text-red-700 font-semibold text-sm text-center">
-                  ATENCAO: Esta acao e IRREVERSIVEL!
-                </p>
-                <p className="text-red-600 text-xs text-center mt-1">
-                  Todos os <strong>{users.length} usuarios</strong> serao excluidos permanentemente. Nao sera possivel recuperar os dados depois.
-                </p>
-              </div>
-              <p className="text-zinc-500 text-xs text-center">
-                Certifique-se de ter exportado os dados antes de continuar.
+      <Dialog open={showModal === '#modal-feedback'} onOpenChange={(open) => { if (!open) handleCloseModal() }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Feedback do evento</DialogTitle>
+          </DialogHeader>
+          <div>
+            <h3 className="font-semibold text-fg mb-3">{selectedUser?.name}</h3>
+            {(() => {
+              const fb = feedbackToReadable(selectedUser?.eventFeedback)
+              const rows: { label: string; value: string }[] = [
+                { label: 'NPS (0-10)', value: fb.nps },
+                { label: 'Aulas assistidas', value: fb.attendance },
+                { label: 'Formato', value: fb.consumptionFormat },
+                { label: 'O que marcou', value: fb.highlight },
+                { label: 'Sentimento pós-evento', value: fb.transformation },
+                { label: 'Status DevClub', value: fb.devclubStatus },
+                { label: 'Obstáculo', value: fb.obstacle },
+                { label: 'Sugestão de melhoria', value: fb.improvement },
+              ]
+              return (
+                <ul className="flex flex-col gap-2">
+                  {rows.map(row => (
+                    <li key={row.label} className="text-copy-sm text-fg-subtle flex flex-col">
+                      <span className="text-label-xs font-semibold text-fg-muted uppercase tracking-caps">{row.label}</span>
+                      <span>{row.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              )
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showModal === '#modal-delete'} onOpenChange={(open) => { if (!open) handleCloseModal() }}>
+        <DialogContent className="max-w-md">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-full bg-error-bg flex items-center justify-center">
+              <Trash2 className="size-8 text-error-fg" />
+            </div>
+            <DialogTitle className="text-xl text-error-fg text-center">Excluir todos os usuarios?</DialogTitle>
+            <div className="bg-error-bg border border-error-line rounded-lg p-4 w-full">
+              <p className="text-error-fg font-semibold text-copy-sm text-center">
+                ATENCAO: Esta acao e IRREVERSIVEL!
+              </p>
+              <p className="text-error-fg text-label-sm text-center mt-1">
+                Todos os <strong>{users.length} usuarios</strong> serao excluidos permanentemente. Nao sera possivel recuperar os dados depois.
               </p>
             </div>
-            <div className="flex gap-3 mt-5">
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                className="flex-1 h-11 rounded-lg border-2 border-zinc-300 text-zinc-600 font-semibold text-sm hover:bg-zinc-50 transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={confirmDeleteUsers}
-                disabled={loadingDelete}
-                className="flex-1 h-11 rounded-lg bg-red-600 text-white font-bold text-sm hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loadingDelete ? 'Excluindo...' : 'Sim, excluir tudo'}
-              </button>
-            </div>
+            <p className="text-fg-muted text-label-sm text-center">
+              Certifique-se de ter exportado os dados antes de continuar.
+            </p>
           </div>
-        </div>
-      )}
-
+          <DialogFooter className="mt-5">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCloseModal}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmDeleteUsers}
+              disabled={loadingDelete}
+              className="flex-1"
+            >
+              {loadingDelete ? 'Excluindo...' : 'Sim, excluir tudo'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

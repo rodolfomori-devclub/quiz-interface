@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router-dom"
+import { LogOut } from "lucide-react"
 
 import { useUser } from "../../hooks/user"
 import { quizUserAPI } from "../../services/api"
+import { Wordmark } from "../Wordmark"
+import { BrandControls } from "../BrandControls"
 
 export const PrivateHeader = () => {
   const { userData, setUserData } = useUser()
   const navigate = useNavigate()
-  
+
   const handleSignOut = (): void => {
     localStorage.removeItem('@quiz-devclub-v1:accessToken')
     localStorage.removeItem('@quiz-devclub-v1:user')
@@ -29,21 +32,30 @@ export const PrivateHeader = () => {
   }
 
   return (
-    <header className="w-full h-[150px] border-t-4 border-violet-500 mx-auto flex flex-col justify-center gap-4 min-md:max-w-[720px]">
-      <div className="w-full">
-        <h2 className="text-xl font-semibold text-violet-600 text-center uppercase">Desafio do</h2>
-        <h1 className="font-semibold uppercase tracking-[0.2rem] text-2xl text-center"><b className="text-slate-900">QUIZ</b></h1>
-      </div>
+    <header className="w-full border-t-2 border-brand">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-4">
+        <div className="flex items-center justify-between gap-4">
+          <Wordmark size="sm" />
+          <BrandControls />
+        </div>
 
-      <div className="w-full flex items-center justify-between px-6">
-        <span className="flex flex-col gap-0.5">
-          <p className="text-zinc-600 text-sm">Olá, <b>{userData?.user?.name}</b></p><i className="text-sm">{userData?.user?.email}</i>
-        </span>
+        <div className="flex items-center justify-between gap-4 border-t border-line pt-3">
+          <span className="flex min-w-0 flex-col">
+            <p className="truncate text-copy-sm text-fg-subtle">Olá, <b className="text-fg">{userData?.user?.name}</b></p>
+            <i className="truncate text-label-sm text-fg-muted">{userData?.user?.email}</i>
+          </span>
 
-        <span>
-          <button onClick={() => handleSignOut()} type="button" className="uppercase text-zinc-600 text-sm hover:opacity-80 hover:transition-all">Sair</button>
-        </span>
+          <button
+            onClick={() => handleSignOut()}
+            type="button"
+            className="inline-flex items-center gap-1.5 text-label font-medium uppercase tracking-caps text-fg-subtle transition-colors hover:text-fg-brand"
+          >
+            <LogOut className="size-4" />
+            Sair
+          </button>
+        </div>
       </div>
+      <div className="border-b border-line" />
     </header>
   )
 }

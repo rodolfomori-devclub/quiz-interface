@@ -1,7 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import '@devclub/tokens/css';
+@import '@devclub/brand/css';
 
-body {
-  -webkit-font-smoothing: antialiased;
+/* Tailwind v4 precisa enxergar as classes usadas no nosso código e nos
+ * componentes da biblioteca (que ficam em node_modules, ignorado por padrão).
+ * Paths relativos a este arquivo (src/styles/). */
+@source '../**/*.{ts,tsx}';
+@source '../../index.html';
+@source '../../node_modules/@devclub/ui/src/**/*.{ts,tsx}';
+
+/* Botões devem ter cursor de ponteiro (Tailwind v4 não aplica por padrão). */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
 }

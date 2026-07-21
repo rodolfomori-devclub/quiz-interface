@@ -15,15 +15,15 @@ export interface ModalProps<T = any> {
 
 export const Modal = ({ isOpen = false, onClose, children, className, isHiddenIcon, title, icon, isCloseIcon = true, ...props }: ModalProps) => {
   return isOpen === true || isOpen !== '#0' ? (
-    <div className="fixed bottom-0 left-0 right-0 top-0 z-[999] flex items-center justify-center bg-black bg-opacity-85 max-md:px-5" {...props}>
-      <div className={`flex h-fit flex-col rounded-md bg-white px-4 py-2 ${className} ${!className && 'max-w-[40rem]'}`}>
+    <div className="fixed bottom-0 left-0 right-0 top-0 z-[999] flex items-center justify-center bg-scrim px-5" {...props}>
+      <div className={`flex h-fit flex-col rounded-xl border border-line bg-elevated px-4 py-3 ${className} ${!className && 'max-w-[40rem]'}`}>
         {isHiddenIcon ? (
           ''
         ) : (
-          <header className="mt-2 flex w-full items-center justify-between">
+          <header className="mt-1 flex w-full items-center justify-between">
             {title ? (
               <div className="flex w-full items-center gap-2">
-                <p className="max-w-[28rem] overflow-hidden text-ellipsis whitespace-nowrap font-sans text-base font-semibold text-zinc-800">{title}</p>
+                <p className="max-w-[28rem] overflow-hidden text-ellipsis whitespace-nowrap font-display text-h5 text-fg">{title}</p>
                 <span>{icon && icon}</span>
               </div>
             ) : (
@@ -31,8 +31,8 @@ export const Modal = ({ isOpen = false, onClose, children, className, isHiddenIc
             )}
 
             {isCloseIcon && (
-              <span onClick={onClose} className="cursor-pointer hover:opacity-80">
-                <IoCloseSharp size={20} className="text-zinc-400" />
+              <span onClick={onClose} className="cursor-pointer text-fg-muted transition-colors hover:text-fg">
+                <IoCloseSharp size={20} />
               </span>
             )}
           </header>

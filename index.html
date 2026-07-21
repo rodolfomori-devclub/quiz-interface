@@ -1,16 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="icon" type="image/x-icon" href="/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/logo.ico" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Fontes da marca DevClub (Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Space+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400..700&family=Silkscreen:wght@400;700&family=VT323&display=swap"
+      rel="stylesheet"
+    />
 
-    <title>Quiz do Programador em 72h - o desafio</title>
+    <!-- Tema salvo aplicado ANTES do primeiro paint (evita flash) -->
+    <script>
+      document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark')
+      // Fundo animado sempre ligado (toggle removido).
+      localStorage.setItem('dc-stars', 'on')
+    </script>
+
+    <title>Quiz do Programador em 72h - o desafio - Por Quiz DevClub</title>
   </head>
   <body>
     <div id="root"></div>

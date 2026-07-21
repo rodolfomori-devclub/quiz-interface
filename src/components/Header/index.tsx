@@ -1,8 +1,14 @@
+import { Wordmark } from '../Wordmark'
+import { BrandControls } from '../BrandControls'
+
 export const Header = () => {
   return (
-    <header className="w-full h-[80px] border-t-4 border-violet-500 mx-auto flex flex-col justify-center">
-      <h2 className="text-xl font-semibold text-violet-600 text-center uppercase min-md:text-3xl">Desafio do</h2>
-      <h1 className="font-semibold uppercase tracking-[0.2rem] text-2xl text-center"><b className="text-slate-900">QUIZ</b></h1>
+    <header className="w-full border-t-2 border-brand">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-4">
+        <Wordmark />
+        <BrandControls />
+      </div>
+      <div className="border-b border-line" />
     </header>
   )
 }

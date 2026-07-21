@@ -4,6 +4,21 @@ import { quizAdminAPI, quizUserAPI } from '../services/api'
 
 export type AdminRole = 'master-admin' | 'default-admin'
 
+export interface EventFeedback {
+  id?: string
+  userId?: string
+  npsScore?: number | null
+  attendance?: string | null
+  consumptionFormat?: string | null
+  highlight?: string | null
+  transformation?: string | null
+  devclubStatus?: string | null
+  obstacle?: string | null
+  improvement?: string | null
+  createdAt?: Date | null
+  updatedAt?: Date | null
+}
+
 export interface User {
   id?: string
   name?: string
@@ -15,6 +30,7 @@ export interface User {
   birthDate?: string | Date
   doLiveAbroad?: boolean
   keywords?: string[]
+  eventFeedback?: EventFeedback | null
   createdAt?: Date | null
   updatedAt?: Date | null
 }

@@ -5,7 +5,8 @@ import mainBannerImg from "../../../assets/banner-min.png"
 
 import { useUser } from "../../../hooks/user"
 
-import { IoMdArrowDropright } from "react-icons/io"
+import { Button, StatCard } from "@devclub/ui"
+import { CheckCircle } from "lucide-react"
 
 export function QuizResponse() {
   const { userFinalGrade, certificate } = useUser()
@@ -14,44 +15,46 @@ export function QuizResponse() {
     <div className="w-full min-h-screen flex flex-col">
       <PrivateHeader />
 
-      <div className="w-full min-lg:max-w-[1063px] min-lg:mx-auto">
-        <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover mt-2 max-h-[270px]" />
+      <div className="w-full px-4 pt-6 md:pt-8 lg:max-w-5xl lg:mx-auto">
+        <img src={mainBannerImg} alt="Banner oficial do evento" className="w-full object-cover max-h-[270px] rounded-xl" />
       </div>
 
-      <div className="w-full p-4 flex-grow min-lg:max-w-[1063px] min-lg:mx-auto">
-        <div id="result-info" className="w-full mt-4">
-          <h4 className="text-sm min-md:text-base text-zinc-700 font-bold text-center">Parabéns! Você terminou de responder ao QUIZ do Programador em 72h - o desafio.</h4>
+      <div className="w-full flex-grow px-4 py-6 lg:max-w-5xl lg:mx-auto">
+        <div id="result-info" className="w-full mt-4 flex flex-col items-center">
+          <h4 className="font-display text-h4 md:text-h3 text-fg text-center">Parabéns! Você terminou de responder ao QUIZ do Programador em 72h - o desafio.</h4>
 
-          <div className="flex items-center gap-2 justify-center mt-4">
-            <p className="text-zinc-600 text-sm min-md:text-base">Pontuação</p>
-            <div className="rounded-md bg-violet-500 text-white p-3 shadow-md">
-              {userFinalGrade}/10
-            </div>
+          <div className="mt-6 w-full max-w-xs">
+            <StatCard
+              label="SUA NOTA"
+              value={<span className="font-mono">{userFinalGrade}/10</span>}
+              variant="glow"
+            />
           </div>
 
           {certificate && userFinalGrade! >= 7 ? (
             <div className="mt-8 text-center">
-              <a
-                href={certificate}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                className="inline-block bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors"
-              >
-                📄 Baixar Certificado
-              </a>
+              <Button asChild size="lg">
+                <a
+                  href={certificate}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  📄 Baixar Certificado
+                </a>
+              </Button>
             </div>
           ) : ''}
 
-          <p className="text-sm min-md:text-base text-center text-violet-500 font-semibold mt-4">
+          <p className="text-copy md:text-copy-lg text-center text-fg-brand font-semibold mt-8">
             Lembrando que, para levar os prêmios, você precisa:
           </p>
         </div>
 
-        <div id="rules-of-prize" className="mt-6">
-          <ul className="flex flex-col gap-2 text-zinc-600 text-sm min-md:text-base">
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Ter acertado 7 questões ou mais neste quiz (70% da prova);</li>
-            <li className="flex items-center"><IoMdArrowDropright className="text-zinc-300" size={26} style={{ minWidth: '26px', marginRight: '2px' }} />Assistir todas as aulas AO VIVO comigo;</li>
+        <div id="rules-of-prize" className="mt-6 flex justify-center">
+          <ul className="flex flex-col gap-3 text-fg-subtle text-copy md:text-copy-lg">
+            <li className="flex items-start gap-2"><CheckCircle className="text-fg-brand shrink-0 mt-0.5" size={22} />Ter acertado 7 questões ou mais neste quiz (70% da prova);</li>
+            <li className="flex items-start gap-2"><CheckCircle className="text-fg-brand shrink-0 mt-0.5" size={22} />Assistir todas as aulas AO VIVO comigo;</li>
           </ul>
         </div>
       </div>
