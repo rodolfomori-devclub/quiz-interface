@@ -70,7 +70,7 @@ function Home() {
   ]
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full min-h-screen pt-6 md:pt-10">
       <Header />
 
       <div className="w-full lg:max-w-5xl lg:mx-auto px-4 pt-10 md:pt-14">
@@ -79,11 +79,11 @@ function Home() {
 
       <section className="w-full px-4 py-6 flex-grow mx-auto max-w-5xl">
         <p className="font-pixel text-eyebrow uppercase tracking-caps text-fg-brand">Desafio do</p>
-        <h3 className="font-display text-h4 md:text-h3 text-fg mt-1">Quiz do Programador em 72h - o desafio</h3>
+        <h3 className="font-display text-h4 md:text-h3 text-fg mt-1">Quiz DevClub</h3>
 
-        <p className="text-fg-subtle mt-3 text-copy md:text-copy-lg">Seja muito bem-vindo ao <b className="text-fg font-semibold">QUIZ do Programador em 72h - o desafio.</b></p>
+        <p className="text-fg-subtle mt-3 text-copy md:text-copy-lg">Seja muito bem-vindo ao <b className="text-fg font-semibold">Quiz DevClub.</b></p>
 
-        <p className="text-fg-subtle mt-4 text-copy-sm md:text-copy">A finalidade deste QUIZ é, primeiro, ajudar a absorver todo o conteúdo que eu dei nas aulas do Programador em 72h - o desafio, colocando seu conhecimento, recém adquirido na prática, segundo, parabenizar e bonificar aqueles que comprovarem ter aprendido tudo o que foi ensinado. Por isso, quem acertar 70% (setenta por cento) ou mais neste QUIZ, vai concorrer a um notebook.
+        <p className="text-fg-subtle mt-4 text-copy-sm md:text-copy">A finalidade deste QUIZ é, primeiro, ajudar a absorver todo o conteúdo que eu dei nas aulas do DevClub, colocando seu conhecimento, recém adquirido na prática, segundo, parabenizar e bonificar aqueles que comprovarem ter aprendido tudo o que foi ensinado. Por isso, quem acertar 70% (setenta por cento) ou mais neste QUIZ, vai concorrer a um notebook.
         </p>
 
         <p className="text-fg-subtle mt-4 text-copy-sm md:text-copy">Para participar e concorrer ao sorteio, é preciso atentar-se às regras a seguir:</p>

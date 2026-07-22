@@ -15,6 +15,8 @@ import { PiIdentificationCard } from "react-icons/pi"
 import { useUser } from '../../../hooks/user'
 import { quizUserAPI } from '../../../services/api'
 import { HandleAxiosAndGenericError, ToastifyDisplay } from '../../../utils'
+import { useCountdown } from '../../../hooks/useCountdown'
+import { STORAGE_KEYS } from '../../../config/quiz'
 
 import InputMask from 'react-input-mask'
 
@@ -29,6 +31,10 @@ import {
   FieldControl,
   Input,
   inputVariants,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from '@devclub/ui'
 
 interface User {
@@ -60,9 +66,17 @@ export function Form() {
   const currentPath = useLocation().pathname
   const { setUserData, isPolicyChecked } = useUser()
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
+  type RetryModal =
+    | { type: 'passed'; grade: number }
+    | { type: 'wait'; grade: number; canRetryAt: number }
+    | null
 
+  const [retryModal, setRetryModal] = useState<RetryModal>(null)
+
+  const waitTarget = retryModal?.type === 'wait' ? retryModal.canRetryAt : null
+  const modalCountdown = useCountdown(waitTarget)
+
+  const submitRegistration = async (): Promise<void> => {
     const user_data = {
       name: user.name,
       email: user.email,
@@ -74,35 +88,67 @@ export function Form() {
 
     setLoadingSubmit(true)
 
-    setTimeout(async () => {
-      try {
-        const response = await quizUserAPI('/user/session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: JSON.stringify({ user_data })
-        })
+    try {
+      const response = await quizUserAPI('/user/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({ user_data })
+      })
 
-        if (response.status === 200 || response.status === 201) {
-          const token = response.data.token
-          const user = response.status === 200 ? response.data.isUser : response.data.user
+      if (response.status === 200 || response.status === 201) {
+        const { status } = response.data
 
-          setUserData({ user, token })
-          localStorage.setItem('@quiz-devclub-v1:accessToken', token)
-          localStorage.setItem('@quiz-devclub-v1:user', JSON.stringify(user))
+        // Já participou e foi aprovado: já está no sorteio.
+        if (status === 'already_passed') {
+          setRetryModal({ type: 'passed', grade: response.data.finalGrade })
+          return
+        }
 
-          quizUserAPI.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        // Já participou, reprovou e ainda está dentro da janela de 1h.
+        if (status === 'must_wait') {
+          setRetryModal({
+            type: 'wait',
+            grade: response.data.finalGrade,
+            canRetryAt: new Date(response.data.canRetryAt).getTime(),
+          })
+          return
+        }
 
+        // status 'can_retry' (reprovado liberado) ou fluxo normal: há token.
+        const token = response.data.token
+        const loggedUser = response.status === 200 ? response.data.isUser : response.data.user
+
+        setUserData({ user: loggedUser, token })
+        localStorage.setItem(STORAGE_KEYS.accessToken, token)
+        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(loggedUser))
+
+        quizUserAPI.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+        if (status === 'can_retry') {
+          // Refazer: o feedback já foi enviado antes → vai direto ao quiz.
+          localStorage.removeItem(STORAGE_KEYS.passedLock)
+          setRetryModal(null)
+          navigate('/quiz')
+        } else {
           navigate('/feedback')
         }
-      } catch (error) {
-        const handleError = await HandleAxiosAndGenericError(error)
-        console.error('error message', handleError)
-        ToastifyDisplay({ toastType: 'error', message: handleError })()
-      } finally {
-        setLoadingSubmit(false)
       }
+    } catch (error) {
+      const handleError = await HandleAxiosAndGenericError(error)
+      console.error('error message', handleError)
+      ToastifyDisplay({ toastType: 'error', message: handleError })()
+    } finally {
+      setLoadingSubmit(false)
+    }
+  }
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    setLoadingSubmit(true)
+    setTimeout(() => {
+      submitRegistration()
     }, 1000)
   }
 
@@ -314,6 +360,48 @@ export function Form() {
       </main>
 
       <Footer />
+
+      <Dialog open={retryModal !== null} onOpenChange={(open) => { if (!open) setRetryModal(null) }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display">Você já participou!</DialogTitle>
+          </DialogHeader>
+
+          {retryModal?.type === 'passed' && (
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-fg-subtle text-copy-sm">Sua nota foi</p>
+              <p className="font-mono text-h3 text-fg-brand">{retryModal.grade}/10</p>
+              <p className="text-fg text-copy-sm mt-1">🎉 Você já está concorrendo ao sorteio. Boa sorte!</p>
+            </div>
+          )}
+
+          {retryModal?.type === 'wait' && (
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-fg-subtle text-copy-sm">Sua nota foi</p>
+              <p className="font-mono text-h3 text-fg-brand">{retryModal.grade}/10</p>
+              <p className="text-fg-subtle text-copy-sm mt-1">
+                Você não atingiu 70%, mas pode refazer o quiz e tentar de novo.
+              </p>
+
+              {modalCountdown.isExpired ? (
+                <Button
+                  size="lg"
+                  className="mt-3 w-full"
+                  loading={loadingSubmit}
+                  onClick={() => submitRegistration()}
+                >
+                  🔄 Refazer o quiz
+                </Button>
+              ) : (
+                <div className="mt-2">
+                  <p className="text-fg-subtle text-copy-sm">Você poderá refazer o quiz em:</p>
+                  <p className="font-mono text-h4 text-fg mt-1">{modalCountdown.formatted}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

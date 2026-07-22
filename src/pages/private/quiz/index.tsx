@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import { quizUserAPI } from "../../../services/api"
 import { HandleAxiosAndGenericError, ToastifyDisplay } from "../../../utils"
 import { useUser } from "../../../hooks/user"
+import { PASSING_GRADE, STORAGE_KEYS } from "../../../config/quiz"
 import {
   Button,
   Card,
@@ -67,10 +68,17 @@ export function Quiz() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
-    const userStorage = localStorage.getItem('@quiz-devclub-v1:alreadyFilledQuiz')
+    const passedLock = localStorage.getItem(STORAGE_KEYS.passedLock)
 
-    if (userStorage) {
-      ToastifyDisplay({ toastType: 'warning', message: 'Só é possível preencher o QUIZ uma vez.' })()
+    if (passedLock) {
+      ToastifyDisplay({ toastType: 'warning', message: 'Você já foi aprovado. Só é possível concorrer uma vez.' })()
+      return
+    }
+
+    const canRetryAtStored = localStorage.getItem(STORAGE_KEYS.canRetryAt)
+
+    if (canRetryAtStored && Date.now() < Number(canRetryAtStored)) {
+      ToastifyDisplay({ toastType: 'warning', message: 'Você poderá refazer o quiz mais tarde. Aguarde o tempo indicado.' })()
       return
     }
 
@@ -93,9 +101,24 @@ export function Quiz() {
         })
 
         if (response.status === 200) {
-          setUserFinalGrade(response.data.finalGrade)
-          setCertificate(response.data.certificateUrl)
-          localStorage.setItem('@quiz-devclub-v1:alreadyFilledQuiz', 'true')
+          const { finalGrade, certificateUrl, canRetryAt } = response.data
+
+          setUserFinalGrade(finalGrade)
+          setCertificate(certificateUrl)
+          localStorage.setItem(STORAGE_KEYS.finalGrade, String(finalGrade))
+
+          if (finalGrade >= PASSING_GRADE) {
+            // Aprovado: trava definitiva, sem retry.
+            localStorage.setItem(STORAGE_KEYS.passedLock, 'true')
+            localStorage.removeItem(STORAGE_KEYS.canRetryAt)
+          } else {
+            // Reprovado: guarda quando poderá refazer (para o resultado/guard).
+            localStorage.removeItem(STORAGE_KEYS.passedLock)
+            if (canRetryAt) {
+              localStorage.setItem(STORAGE_KEYS.canRetryAt, String(new Date(canRetryAt).getTime()))
+            }
+          }
+
           navigate('/resultado')
         }
       } catch (error) {

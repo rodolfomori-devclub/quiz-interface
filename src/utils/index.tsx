@@ -25,7 +25,7 @@ export const HandleAxiosAndGenericError = async (error: AxiosError | unknown): P
           error_message = 'Não autorizado. Verifique suas credenciais.'
           break
         case 403:
-          error_message = 'Não tem permissão para executar esse serviço.'
+          error_message = error.response.data?.message || 'Não tem permissão para executar esse serviço.'
           break
         default:
           error_message = error.response.data?.message || error_message
