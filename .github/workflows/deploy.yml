@@ -33,7 +33,9 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy to S3
-        run: aws s3 sync ./dist s3://quiz-devclub --delete
+        # cp --recursive exige apenas s3:PutObject (sync --delete exigiria
+        # s3:ListBucket/DeleteObject, ausentes na policy do usuario github-deploy).
+        run: aws s3 cp ./dist s3://quiz-devclub --recursive
 
       - name: Invalidate CloudFront cache
         run: aws cloudfront create-invalidation --distribution-id E3U5CPN5AWQIHT --paths '/*'
