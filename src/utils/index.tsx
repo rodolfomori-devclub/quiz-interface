@@ -22,7 +22,9 @@ export const HandleAxiosAndGenericError = async (error: AxiosError | unknown): P
           error_message = 'Recurso não encontrado.'
           break
         case 401:
-          error_message = 'Não autorizado. Verifique suas credenciais.'
+          // 401 aqui é sempre token ausente/expirado - senha errada volta 400.
+          // Falar em "credenciais" mandava o aluno conferir algo que não era o problema.
+          error_message = 'Sua sessão expirou. Preencha o formulário de novo para continuar.'
           break
         case 403:
           error_message = error.response.data?.message || 'Não tem permissão para executar esse serviço.'

@@ -5,6 +5,8 @@ export const PASSING_GRADE = 7
 export const STORAGE_KEYS = {
   accessToken: '@quiz-devclub-v1:accessToken',
   user: '@quiz-devclub-v1:user',
+  adminAccessToken: '@quiz-devclub-v1:adminAccessToken',
+  admin: '@quiz-devclub-v1:admin',
   // Setado APENAS quando aprovado (>= 7): trava definitiva.
   passedLock: '@quiz-devclub-v1:alreadyFilledQuiz',
   // Timestamp (ms) em que um reprovado poderá refazer o quiz.
