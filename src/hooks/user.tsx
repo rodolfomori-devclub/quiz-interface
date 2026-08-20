@@ -25,13 +25,29 @@ export interface EventFeedback {
 export interface Event {
   id: string
   name: string
+  slug: string
   isActive: boolean
+  isTemplate?: boolean
   createdAt?: string | Date
   updatedAt?: string | Date
   _count?: {
     participations: number
     feedbacks: number
+    questions?: number
   }
+}
+
+export interface AdminAnswer {
+  id?: string
+  description: string
+  isAnswerCorrect: boolean
+}
+
+export interface AdminQuestion {
+  id: string
+  eventId?: string
+  question: string
+  answers: AdminAnswer[]
 }
 
 export interface User {

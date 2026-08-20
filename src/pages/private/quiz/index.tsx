@@ -134,10 +134,10 @@ export function Quiz() {
 
   const handleQueryQuiz = async (): Promise<void> => {
     try {
-      const response = await quizUserAPI('/admin/list-question', {
+      const response = await quizUserAPI('/user/quiz-questions', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${userData?.token}`
         }
       })
 

@@ -5,19 +5,60 @@ import { Footer } from "../components/Footer"
 
 import mainBannerImg from '../assets/banner-min.png'
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { ArrowUp, ChevronRight } from "lucide-react"
 
 import { Button, Card, CardContent, Checkbox } from "@devclub/ui"
 
 import { useUser } from "../hooks/user"
+import { quizUserAPI } from "../services/api"
+import { STORAGE_KEYS } from "../config/quiz"
+
+interface EventInfo {
+  id: string
+  name: string
+  slug: string
+}
 
 function Home() {
   const { setIsPolicyChecked, isPolicyChecked } = useUser()
   const [showScrollTopButton, setShowScrollTopButton] = useState<boolean>(false)
   const navigate = useNavigate()
 
+  const { slug } = useParams()
+  const [event, setEvent] = useState<EventInfo | null>(null)
+  const [eventError, setEventError] = useState<string | null>(null)
+
+  // Resolve o evento pelo link (/e/:slug) ou, no root, o evento ativo.
+  useEffect(() => {
+    let cancelled = false
+    const resolveEvent = async () => {
+      try {
+        const url = slug ? `/public/events/${slug}` : '/public/events/active'
+        const res = await quizUserAPI(url, { method: 'GET' })
+        if (cancelled) return
+        const ev: EventInfo = res.data
+        setEvent(ev)
+        setEventError(null)
+        localStorage.setItem(STORAGE_KEYS.eventId, ev.id)
+        localStorage.setItem(STORAGE_KEYS.eventName, ev.name ?? '')
+      } catch {
+        if (cancelled) return
+        setEvent(null)
+        setEventError(slug ? 'Evento não encontrado.' : 'Nenhum evento ativo no momento.')
+      }
+    }
+    resolveEvent()
+    return () => {
+      cancelled = true
+    }
+  }, [slug])
+
   const handleNavigate = (): void => {
+    if (!event) {
+      alert(eventError || 'Nenhum evento disponível no momento.')
+      return
+    }
     if (isPolicyChecked) {
       navigate('/preencher')
     } else {
@@ -80,6 +121,13 @@ function Home() {
       <section className="w-full px-4 py-6 flex-grow mx-auto max-w-5xl">
         <p className="font-pixel text-eyebrow uppercase tracking-caps text-fg-brand">Desafio do</p>
         <h3 className="font-display text-h4 md:text-h3 text-fg mt-1">Quiz DevClub</h3>
+
+        {event && (
+          <p className="text-fg-subtle text-copy-sm mt-1">Evento: <b className="text-fg font-semibold">{event.name}</b></p>
+        )}
+        {eventError && (
+          <p className="text-error-fg text-copy-sm mt-2">{eventError}</p>
+        )}
 
         <p className="text-fg-subtle mt-3 text-copy md:text-copy-lg">Seja muito bem-vindo ao <b className="text-fg font-semibold">Quiz DevClub.</b></p>
 
@@ -170,7 +218,7 @@ function Home() {
               size="lg"
               className="w-full md:w-1/2"
               type="button"
-              disabled={!isPolicyChecked}
+              disabled={!isPolicyChecked || !event}
             >
               Prosseguir
             </Button>

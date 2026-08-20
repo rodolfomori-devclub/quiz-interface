@@ -7,6 +7,7 @@ import { quizAdminAPI } from "../../../services/api"
 import { AdminPrivateHeader } from "../../../components/AdminPrivateHeader"
 import { feedbackToReadable } from "../../../utils/eventFeedback"
 import { FeedbackResults } from "./FeedbackResults"
+import { QuestionsEditor } from "./QuestionsEditor"
 
 import {
   Button,
@@ -36,11 +37,10 @@ import {
   FileSpreadsheet,
   Send,
   Copy,
-  CheckSquare,
-  CircleX,
   Users,
   Plus,
   CalendarCheck,
+  Link2,
 } from "lucide-react"
 
 import * as XLSX from 'xlsx'
@@ -70,6 +70,16 @@ export function AdminDashboard() {
 
   const selectedEvent = events.find(e => e.id === selectedEventId)
   const authHeader = { Authorization: `Bearer ${adminData?.token}` }
+
+  const [copiedLink, setCopiedLink] = useState<boolean>(false)
+  const eventLink = selectedEvent ? `${window.location.origin}/e/${selectedEvent.slug}` : ''
+
+  const handleCopyLink = (): void => {
+    if (!eventLink) return
+    navigator.clipboard.writeText(eventLink)
+    setCopiedLink(true)
+    setTimeout(() => setCopiedLink(false), 2000)
+  }
 
   const handleQueryEvents = async (): Promise<void> => {
     try {
@@ -266,6 +276,12 @@ export function AdminDashboard() {
               </Button>
             ) : null}
 
+            {selectedEvent && (
+              <Button variant="ghost" size="sm" onClick={handleCopyLink} title={eventLink}>
+                <Link2 className="size-4" /> {copiedLink ? 'Link copiado!' : 'Copiar link'}
+              </Button>
+            )}
+
             <div className="ml-auto flex items-center gap-1">
               <Button variant="secondary" size="sm" onClick={() => setCreateOpen(true)}>
                 <Plus className="size-4" /> Criar evento
@@ -392,114 +408,17 @@ export function AdminDashboard() {
             </TabsContent>
 
             <TabsContent value="Q&A">
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-h5 font-semibold text-fg">Adicionar Perguntas</h3>
-                  <p className="text-copy-sm text-fg-subtle">Marque se a alternativa é <b>verdadeira</b> ou <b>falsa</b> pelos ícones ao lado do texto</p>
-                </div>
-                <form onSubmit={() => { }} className="flex flex-col gap-4">
-                  <label htmlFor="" className="flex flex-col gap-1.5">
-                    <span className="text-label font-medium text-fg">Questão</span>
-                    <Input
-                      id="question-input"
-                      type="text"
-                      inputSize="lg"
-                      placeholder="digite a pergunta aqui"
-                      required
-                    />
-                  </label>
-
-                  <label htmlFor="" className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between max-w-[180px]">
-                      <span className="text-label font-medium text-fg">Alternativa #1</span>
-                      <div id="alternative-1" className="flex items-center gap-1">
-                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
-                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
-                      </div>
-                    </div>
-                    <Input
-                      id="choise-input-1"
-                      type="text"
-                      inputSize="lg"
-                      placeholder="digite uma alternativa aqui"
-                      required
-                    />
-                  </label>
-
-                  <label htmlFor="" className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between max-w-[180px]">
-                      <span className="text-label font-medium text-fg">Alternativa #2</span>
-                      <div id="alternative-2" className="flex items-center gap-1">
-                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
-                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
-                      </div>
-                    </div>
-                    <Input
-                      id="choise-input-2"
-                      type="text"
-                      inputSize="lg"
-                      placeholder="digite uma alternativa aqui"
-                      required
-                    />
-                  </label>
-
-                  <label htmlFor="" className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between max-w-[180px]">
-                      <span className="text-label font-medium text-fg">Alternativa #3</span>
-                      <div id="alternative-3" className="flex items-center gap-1">
-                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
-                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
-                      </div>
-                    </div>
-                    <Input
-                      id="choise-input-3"
-                      type="text"
-                      inputSize="lg"
-                      placeholder="digite uma alternativa aqui"
-                      required
-                    />
-                  </label>
-
-                  <label htmlFor="" className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between max-w-[180px]">
-                      <span className="text-label font-medium text-fg">Alternativa #4</span>
-                      <div id="alternative-4" className="flex items-center gap-1">
-                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
-                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
-                      </div>
-                    </div>
-                    <Input
-                      id="choise-input-4"
-                      type="text"
-                      inputSize="lg"
-                      placeholder="digite uma alternativa aqui"
-                      required
-                    />
-                  </label>
-
-                  <label htmlFor="" className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between max-w-[265px]">
-                      <span className="text-label font-medium text-fg">Alternativa #5 (opcional)</span>
-                      <div id="alternative-5" className="flex items-center gap-1">
-                        <CheckSquare size={16} id="correct" className="text-fg-muted cursor-pointer hover:text-fg-brand transition-colors" />
-                        <CircleX size={20} id="wrong" className="text-fg-muted cursor-pointer hover:text-error-fg transition-colors" />
-                      </div>
-                    </div>
-                    <Input
-                      id="choise-input-5"
-                      type="text"
-                      inputSize="lg"
-                      placeholder="digite uma alternativa aqui"
-                    />
-                  </label>
-
-                  <div className="mt-4 md:flex md:justify-center">
-                    <Button type="submit" size="lg" className="w-full md:max-w-[60%]">
-                      Cadastrar Q&A
-                    </Button>
-                  </div>
-                </form>
-              </div>
+              {selectedEventId ? (
+                <QuestionsEditor
+                  eventId={selectedEventId}
+                  token={adminData?.token}
+                  eventName={selectedEvent?.name}
+                />
+              ) : (
+                <p className="text-copy-sm text-fg-muted py-6 text-center">
+                  Selecione um evento para editar as perguntas.
+                </p>
+              )}
             </TabsContent>
           </Tabs>
         </div>

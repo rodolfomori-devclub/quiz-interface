@@ -88,13 +88,15 @@ export function Form() {
 
     setLoadingSubmit(true)
 
+    const eventId = localStorage.getItem(STORAGE_KEYS.eventId) || undefined
+
     try {
       const response = await quizUserAPI('/user/session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        data: JSON.stringify({ user_data })
+        data: JSON.stringify({ user_data, eventId })
       })
 
       if (response.status === 200 || response.status === 201) {

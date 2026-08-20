@@ -11,6 +11,7 @@ export function AuthRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/e/:slug" element={<Home />} />
       <Route path="/preencher" element={<Form />} />
 
       <Route path="/admin/login" element={<AdminLogin />} />
