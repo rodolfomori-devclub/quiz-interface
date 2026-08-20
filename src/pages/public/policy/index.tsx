@@ -10,7 +10,7 @@ export function PrivacyPolicy() {
         <h1 className="font-display text-h3 md:text-h2 text-center uppercase text-fg">Política de Privacidade</h1>
 
         <Card className="mt-8">
-          <CardContent>
+          <CardContent className="pt-6">
         <section id="main-container" className="w-full">
           <p className="text-copy-sm text-fg-subtle">A presente Política de Privacidade “Política” é fornecida pelo DevClub, nome empresarial Launch Control, pessoa jurídica de direito privado, inscrita no CNPJ sob o n° 35.775.053/0001-69, com endereço localizado à Av. Cel. Sezefredo Fagundes, 631, ap.52A São Paulo – SP, CEP: 02306-001, contato eletrônico: contato@rodolfomori.com, com a finalidade de informar “Você”, na qualidade de “Aluno”, “Usuário” ou “Visitante”, a respeito do estabelecimento da presente Política de Privacidade e com a finalidade de tornar transparentes as suas atividades e demonstrar a privacidade das informações que são coletadas, além de como elas são tratadas, em que situações são compartilhadas e quando são excluídas, nos termos a seguir:</p>
 

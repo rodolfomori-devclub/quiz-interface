@@ -22,6 +22,20 @@ export const highlightLabels: LabelMap = {
   community: 'Comunidade/chat',
 }
 
+export const favoriteProjectLabels: LabelMap = {
+  ai_agent: 'Agente de IA',
+  programming: 'Projeto de programação',
+  both: 'Gostou dos dois',
+  none: 'Nenhum',
+}
+
+export const aiAgentRatingLabels: LabelMap = {
+  loved: 'Adorei, quero mais',
+  liked: 'Gostei',
+  neutral: 'Indiferente',
+  disliked: 'Não gostei, preferia programação',
+}
+
 export const transformationLabels: LabelMap = {
   ready: 'Muito mais confiante, quero começar agora',
   confident_doubts: 'Mais confiante, mas ainda com dúvidas',
@@ -59,6 +73,8 @@ export function feedbackToReadable(feedback?: EventFeedback | null) {
     attendance: label(attendanceLabels, feedback?.attendance),
     consumptionFormat: label(consumptionFormatLabels, feedback?.consumptionFormat),
     highlight: label(highlightLabels, feedback?.highlight),
+    favoriteProject: label(favoriteProjectLabels, feedback?.favoriteProject),
+    aiAgentRating: label(aiAgentRatingLabels, feedback?.aiAgentRating),
     transformation: label(transformationLabels, feedback?.transformation),
     devclubStatus: label(devclubStatusLabels, feedback?.devclubStatus),
     obstacle: label(obstacleLabels, feedback?.obstacle),

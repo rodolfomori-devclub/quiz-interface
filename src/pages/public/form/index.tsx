@@ -16,7 +16,7 @@ import { useUser } from '../../../hooks/user'
 import { quizUserAPI } from '../../../services/api'
 import { HandleAxiosAndGenericError, ToastifyDisplay } from '../../../utils'
 import { useCountdown } from '../../../hooks/useCountdown'
-import { STORAGE_KEYS } from '../../../config/quiz'
+import { STORAGE_KEYS, quizKeys } from '../../../config/quiz'
 
 import InputMask from 'react-input-mask'
 
@@ -119,16 +119,21 @@ export function Form() {
         // status 'can_retry' (reprovado liberado) ou fluxo normal: há token.
         const token = response.data.token
         const loggedUser = response.status === 200 ? response.data.isUser : response.data.user
+        const event = response.data.event
 
         setUserData({ user: loggedUser, token })
         localStorage.setItem(STORAGE_KEYS.accessToken, token)
         localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(loggedUser))
+        if (event?.id) {
+          localStorage.setItem(STORAGE_KEYS.eventId, event.id)
+          localStorage.setItem(STORAGE_KEYS.eventName, event.name ?? '')
+        }
 
         quizUserAPI.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
         if (status === 'can_retry') {
           // Refazer: o feedback já foi enviado antes → vai direto ao quiz.
-          localStorage.removeItem(STORAGE_KEYS.passedLock)
+          if (event?.id) localStorage.removeItem(quizKeys(event.id).passedLock)
           setRetryModal(null)
           navigate('/quiz')
         } else {

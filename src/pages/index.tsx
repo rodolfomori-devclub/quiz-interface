@@ -70,7 +70,7 @@ function Home() {
   ]
 
   return (
-    <div className="w-full min-h-screen pt-6 md:pt-10">
+    <div className="w-full min-h-screen">
       <Header />
 
       <div className="w-full lg:max-w-5xl lg:mx-auto px-4 pt-10 md:pt-14">
@@ -91,7 +91,7 @@ function Home() {
         <div id="draw-rules" className="mt-5 flex flex-col gap-4">
           {drawRules.map((rule) => (
             <Card key={rule.question}>
-              <CardContent className="flex flex-col gap-2">
+              <CardContent className="flex flex-col gap-2 pt-6">
                 <div className="flex items-start gap-2">
                   <ChevronRight className="size-5 shrink-0 mt-0.5 text-fg-brand" aria-hidden />
                   <h4 className="uppercase font-display text-label text-fg">{rule.question}</h4>
@@ -102,7 +102,7 @@ function Home() {
           ))}
 
           <Card>
-            <CardContent className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-2 pt-6">
               <h4 className="uppercase font-display text-label text-fg">Resumo: O que eu preciso fazer para concorrer ao prêmio?</h4>
 
               <ul className="flex flex-col gap-2 text-fg-subtle mt-2 text-copy-sm md:text-copy">

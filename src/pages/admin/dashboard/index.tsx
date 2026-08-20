@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { User, useUser } from "../../../hooks/user"
+import { User, Event, useUser } from "../../../hooks/user"
 import { ToastifyDisplay } from "../../../utils"
 import { quizAdminAPI } from "../../../services/api"
 
@@ -10,6 +10,7 @@ import { FeedbackResults } from "./FeedbackResults"
 
 import {
   Button,
+  Badge,
   IconButton,
   Input,
   StatCard,
@@ -32,13 +33,14 @@ import {
 } from "@devclub/ui"
 
 import {
-  Trash2,
   FileSpreadsheet,
   Send,
   Copy,
   CheckSquare,
   CircleX,
   Users,
+  Plus,
+  CalendarCheck,
 } from "lucide-react"
 
 import * as XLSX from 'xlsx'
@@ -47,6 +49,8 @@ type MenuOptions = 'dashboard' | 'feedback' | 'Q&A'
 
 export function AdminDashboard() {
   const { adminData } = useUser()
+  const [events, setEvents] = useState<Event[]>([])
+  const [selectedEventId, setSelectedEventId] = useState<string>('')
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [searchUser, setSearchUser] = useState<string>('')
@@ -58,16 +62,36 @@ export function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<User>({})
   const [showModal, setShowModal] = useState<string>('#0')
   const [copied, setCopied] = useState<boolean>(false)
-  const [loadingDelete, setLoadingDelete] = useState<boolean>(false)
 
-  const handleQueryUsers = async (): Promise<void> => {
+  // Gestão de eventos.
+  const [createOpen, setCreateOpen] = useState<boolean>(false)
+  const [newEventName, setNewEventName] = useState<string>('')
+  const [loadingEvent, setLoadingEvent] = useState<boolean>(false)
+
+  const selectedEvent = events.find(e => e.id === selectedEventId)
+  const authHeader = { Authorization: `Bearer ${adminData?.token}` }
+
+  const handleQueryEvents = async (): Promise<void> => {
     try {
-      const response = await quizAdminAPI('/admin/list-users', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const response = await quizAdminAPI('/admin/events', { method: 'GET', headers: authHeader })
+
+      if (response.status === 200) {
+        const list: Event[] = response.data
+        setEvents(list)
+        setSelectedEventId(prev => {
+          if (prev && list.some(e => e.id === prev)) return prev
+          const active = list.find(e => e.isActive) ?? list[0]
+          return active?.id ?? ''
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleQueryLeads = async (eventId: string): Promise<void> => {
+    try {
+      const response = await quizAdminAPI(`/admin/events/${eventId}/leads`, { method: 'GET', headers: authHeader })
 
       if (response.status === 200) {
         setUsers(response.data)
@@ -75,6 +99,48 @@ export function AdminDashboard() {
       }
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  const handleCreateEvent = async (): Promise<void> => {
+    if (!newEventName.trim()) return
+    setLoadingEvent(true)
+    try {
+      const response = await quizAdminAPI('/admin/events', {
+        method: 'POST',
+        headers: authHeader,
+        data: JSON.stringify({ name: newEventName.trim() }),
+      })
+      if (response.status === 201) {
+        setNewEventName('')
+        setCreateOpen(false)
+        await handleQueryEvents()
+        setSelectedEventId(response.data.id)
+        ToastifyDisplay({ toastType: 'success', message: 'Evento criado com sucesso.' })()
+      }
+    } catch (error) {
+      ToastifyDisplay({ toastType: 'error', message: 'Erro ao criar o evento.' })()
+    } finally {
+      setLoadingEvent(false)
+    }
+  }
+
+  const handleActivateEvent = async (): Promise<void> => {
+    if (!selectedEventId) return
+    setLoadingEvent(true)
+    try {
+      const response = await quizAdminAPI(`/admin/events/${selectedEventId}/activate`, {
+        method: 'PATCH',
+        headers: authHeader,
+      })
+      if (response.status === 200) {
+        await handleQueryEvents()
+        ToastifyDisplay({ toastType: 'success', message: 'Evento ativado com sucesso.' })()
+      }
+    } catch (error) {
+      ToastifyDisplay({ toastType: 'error', message: 'Erro ao ativar o evento.' })()
+    } finally {
+      setLoadingEvent(false)
     }
   }
 
@@ -93,6 +159,8 @@ export function AdminDashboard() {
           "Aulas assistidas": fb.attendance,
           "Formato": fb.consumptionFormat,
           "O que marcou": fb.highlight,
+          "Projeto favorito": fb.favoriteProject,
+          "Agente de IA (o que achou)": fb.aiAgentRating,
           "Sentimento pós-evento": fb.transformation,
           "Status DevClub": fb.devclubStatus,
           "Obstáculo": fb.obstacle,
@@ -103,7 +171,8 @@ export function AdminDashboard() {
 
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Usuários")
-    XLSX.writeFile(workbook, "usuarios_quiz.xlsx")
+    const safeName = (selectedEvent?.name ?? 'evento').replace(/[^a-z0-9]+/gi, '_').toLowerCase()
+    XLSX.writeFile(workbook, `usuarios_quiz_${safeName}.xlsx`)
 
     ToastifyDisplay({ toastType: 'success', message: 'Exportação realizada com sucesso.' })()
   }
@@ -157,44 +226,15 @@ export function AdminDashboard() {
     }, 2000)
   }
 
-  const handleDeleteUsers = (): void => {
-    if (!users.length || !filteredUsers.length) {
-      return
-    }
-    setShowModal('#modal-delete')
-  }
-
-  const confirmDeleteUsers = async (): Promise<void> => {
-    setLoadingDelete(true)
-    try {
-      const response = await quizAdminAPI('/admin/delete-users', {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${adminData?.token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        handleQueryUsers()
-        handleCloseModal()
-        ToastifyDisplay({
-          toastType: 'success',
-          message: 'Usuário(s) excluído(s) com sucesso',
-        })();
-      }
-    } catch (error) {
-      ToastifyDisplay({
-        toastType: 'error',
-        message: 'Erro ao excluir o(s) usuário(s). Tente novamente mais tarde.',
-      });
-    } finally {
-      setLoadingDelete(false)
-    }
-  }
+  useEffect(() => {
+    handleQueryEvents()
+  }, [])
 
   useEffect(() => {
-    handleQueryUsers()
-  }, [])
+    if (selectedEventId) {
+      handleQueryLeads(selectedEventId)
+    }
+  }, [selectedEventId])
 
   return (
     <>
@@ -202,6 +242,46 @@ export function AdminDashboard() {
         <AdminPrivateHeader />
 
         <div className="mx-auto mt-5 w-full max-w-5xl px-4">
+          {/* Barra de eventos — dados abaixo são do evento selecionado */}
+          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface p-3">
+            <span className="text-label-sm font-medium text-fg-muted uppercase tracking-caps">Evento</span>
+            <select
+              value={selectedEventId}
+              onChange={e => setSelectedEventId(e.target.value)}
+              className="rounded-md border border-line bg-component px-3 py-2 text-copy-sm text-fg outline-none focus:border-brand"
+            >
+              {events.length === 0 && <option value="">Nenhum evento</option>}
+              {events.map(ev => (
+                <option key={ev.id} value={ev.id}>
+                  {ev.name}{ev.isActive ? ' (ativo)' : ''} · {ev._count?.participations ?? 0} leads
+                </option>
+              ))}
+            </select>
+
+            {selectedEvent?.isActive ? (
+              <Badge variant="brand" size="sm">Ativo</Badge>
+            ) : selectedEvent ? (
+              <Button variant="outline" size="sm" loading={loadingEvent} onClick={handleActivateEvent}>
+                <CalendarCheck className="size-4" /> Ativar
+              </Button>
+            ) : null}
+
+            <div className="ml-auto flex items-center gap-1">
+              <Button variant="secondary" size="sm" onClick={() => setCreateOpen(true)}>
+                <Plus className="size-4" /> Criar evento
+              </Button>
+              <IconButton
+                variant="ghost"
+                size="sm"
+                label="Exportar tabela do evento"
+                title="Exportar tabela do evento"
+                onClick={exportToXLSX}
+              >
+                <FileSpreadsheet />
+              </IconButton>
+            </div>
+          </div>
+
           <Tabs value={menuOptions} onValueChange={(value) => handleChangeMenuType(value as MenuOptions)}>
             <div className="flex items-center justify-between gap-4">
               <TabsList>
@@ -209,27 +289,6 @@ export function AdminDashboard() {
                 <TabsTrigger value="feedback">Pré-quiz</TabsTrigger>
                 <TabsTrigger value="Q&A">Q&A</TabsTrigger>
               </TabsList>
-
-              <div className="flex items-center gap-1">
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  label="Excluir todos os usuários"
-                  title="Excluir todos os usuários"
-                  onClick={handleDeleteUsers}
-                >
-                  <Trash2 />
-                </IconButton>
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  label="Exportar tabela de usuários"
-                  title="Exportar tabela de usuários"
-                  onClick={exportToXLSX}
-                >
-                  <FileSpreadsheet />
-                </IconButton>
-              </div>
             </div>
 
             <TabsContent value="dashboard">
@@ -497,6 +556,8 @@ export function AdminDashboard() {
                 { label: 'Aulas assistidas', value: fb.attendance },
                 { label: 'Formato', value: fb.consumptionFormat },
                 { label: 'O que marcou', value: fb.highlight },
+                { label: 'Projeto favorito', value: fb.favoriteProject },
+                { label: 'Agente de IA (o que achou)', value: fb.aiAgentRating },
                 { label: 'Sentimento pós-evento', value: fb.transformation },
                 { label: 'Status DevClub', value: fb.devclubStatus },
                 { label: 'Obstáculo', value: fb.obstacle },
@@ -517,42 +578,36 @@ export function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showModal === '#modal-delete'} onOpenChange={(open) => { if (!open) handleCloseModal() }}>
-        <DialogContent className="max-w-md">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-error-bg flex items-center justify-center">
-              <Trash2 className="size-8 text-error-fg" />
-            </div>
-            <DialogTitle className="text-xl text-error-fg text-center">Excluir todos os usuarios?</DialogTitle>
-            <div className="bg-error-bg border border-error-line rounded-lg p-4 w-full">
-              <p className="text-error-fg font-semibold text-copy-sm text-center">
-                ATENCAO: Esta acao e IRREVERSIVEL!
-              </p>
-              <p className="text-error-fg text-label-sm text-center mt-1">
-                Todos os <strong>{users.length} usuarios</strong> serao excluidos permanentemente. Nao sera possivel recuperar os dados depois.
-              </p>
-            </div>
-            <p className="text-fg-muted text-label-sm text-center">
-              Certifique-se de ter exportado os dados antes de continuar.
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display">Criar novo evento</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3">
+            <p className="text-copy-sm text-fg-subtle">
+              Cada lead participa uma vez por evento. Crie um evento novo a cada semana — os anteriores ficam salvos.
             </p>
+            <Input
+              type="text"
+              value={newEventName}
+              onChange={e => setNewEventName(e.target.value)}
+              placeholder="Ex.: Evento 12/08"
+              maxLength={80}
+              onKeyDown={e => { if (e.key === 'Enter') handleCreateEvent() }}
+            />
           </div>
-          <DialogFooter className="mt-5">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCloseModal}
-              className="flex-1"
-            >
+          <DialogFooter className="mt-4">
+            <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="flex-1">
               Cancelar
             </Button>
             <Button
               type="button"
-              variant="destructive"
-              onClick={confirmDeleteUsers}
-              disabled={loadingDelete}
+              onClick={handleCreateEvent}
+              loading={loadingEvent}
+              disabled={!newEventName.trim()}
               className="flex-1"
             >
-              {loadingDelete ? 'Excluindo...' : 'Sim, excluir tudo'}
+              Criar evento
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -49,6 +49,20 @@ const highlightOptions: Option[] = [
   { value: 'community', label: 'A comunidade/energia do chat' },
 ]
 
+const favoriteProjectOptions: Option[] = [
+  { value: 'ai_agent', label: 'O agente de IA' },
+  { value: 'programming', label: 'O projeto de programação' },
+  { value: 'both', label: 'Gostei dos dois igualmente' },
+  { value: 'none', label: 'Não gostei de nenhum' },
+]
+
+const aiAgentRatingOptions: Option[] = [
+  { value: 'loved', label: 'Adorei, quero mais disso nos próximos' },
+  { value: 'liked', label: 'Gostei' },
+  { value: 'neutral', label: 'Indiferente / tanto faz' },
+  { value: 'disliked', label: 'Não gostei, preferia só programação' },
+]
+
 const transformationOptions: Option[] = [
   { value: 'ready', label: 'Muito mais confiante, quero começar agora' },
   { value: 'confident_doubts', label: 'Mais confiante, mas ainda tenho dúvidas' },
@@ -78,6 +92,8 @@ interface FeedbackState {
   attendance: string
   consumptionFormat: string
   highlight: string
+  favoriteProject: string
+  aiAgentRating: string
   transformation: string
   devclubStatus: string
   obstacle: string
@@ -89,6 +105,8 @@ const initialFeedback: FeedbackState = {
   attendance: '',
   consumptionFormat: '',
   highlight: '',
+  favoriteProject: '',
+  aiAgentRating: '',
   transformation: '',
   devclubStatus: '',
   obstacle: '',
@@ -134,6 +152,8 @@ export function EventFeedback() {
       attendance: feedback.attendance,
       consumptionFormat: feedback.consumptionFormat,
       highlight: feedback.highlight,
+      favoriteProject: feedback.favoriteProject,
+      aiAgentRating: feedback.aiAgentRating,
       transformation: feedback.transformation,
       devclubStatus: feedback.devclubStatus,
       obstacle: showObstacle ? feedback.obstacle : null,
@@ -231,6 +251,22 @@ export function EventFeedback() {
             options={highlightOptions}
             selected={feedback.highlight}
             onSelect={value => handleSelect('highlight', value)}
+          />
+
+          <SingleChoice
+            title="Você fez dois projetos no evento: o agente de IA e o projeto de programação. Qual você mais gostou de fazer?"
+            name="favoriteProject"
+            options={favoriteProjectOptions}
+            selected={feedback.favoriteProject}
+            onSelect={value => handleSelect('favoriteProject', value)}
+          />
+
+          <SingleChoice
+            title="O agente de IA foi novidade neste evento. O que você achou de fazer esse projeto?"
+            name="aiAgentRating"
+            options={aiAgentRatingOptions}
+            selected={feedback.aiAgentRating}
+            onSelect={value => handleSelect('aiAgentRating', value)}
           />
 
           <SingleChoice

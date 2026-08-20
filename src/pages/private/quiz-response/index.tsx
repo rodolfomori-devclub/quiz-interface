@@ -6,7 +6,7 @@ import mainBannerImg from "../../../assets/banner-min.png"
 import { useNavigate } from "react-router-dom"
 import { useUser } from "../../../hooks/user"
 import { useCountdown } from "../../../hooks/useCountdown"
-import { PASSING_GRADE, STORAGE_KEYS } from "../../../config/quiz"
+import { PASSING_GRADE, quizKeys, getCurrentEventId } from "../../../config/quiz"
 
 import { Button, StatCard } from "@devclub/ui"
 import { CheckCircle } from "lucide-react"
@@ -15,19 +15,21 @@ export function QuizResponse() {
   const { userFinalGrade, certificate } = useUser()
   const navigate = useNavigate()
 
+  const keys = quizKeys(getCurrentEventId())
+
   // Nota: contexto primeiro; localStorage como fallback (sobrevive ao refresh).
-  const storedGrade = localStorage.getItem(STORAGE_KEYS.finalGrade)
+  const storedGrade = localStorage.getItem(keys.finalGrade)
   const grade = userFinalGrade ?? (storedGrade !== null ? Number(storedGrade) : null)
   const isApproved = grade !== null && grade >= PASSING_GRADE
 
-  const storedCanRetryAt = localStorage.getItem(STORAGE_KEYS.canRetryAt)
+  const storedCanRetryAt = localStorage.getItem(keys.canRetryAt)
   const canRetryAtMs = storedCanRetryAt ? Number(storedCanRetryAt) : null
 
   const countdown = useCountdown(isApproved ? null : canRetryAtMs)
   const canRetryNow = countdown.isExpired || !canRetryAtMs
 
   const handleRetry = (): void => {
-    localStorage.removeItem(STORAGE_KEYS.passedLock)
+    localStorage.removeItem(keys.passedLock)
     navigate('/quiz')
   }
 

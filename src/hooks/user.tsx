@@ -7,16 +7,31 @@ export type AdminRole = 'master-admin' | 'default-admin'
 export interface EventFeedback {
   id?: string
   userId?: string
+  eventId?: string
   npsScore?: number | null
   attendance?: string | null
   consumptionFormat?: string | null
   highlight?: string | null
+  favoriteProject?: string | null
+  aiAgentRating?: string | null
   transformation?: string | null
   devclubStatus?: string | null
   obstacle?: string | null
   improvement?: string | null
   createdAt?: Date | null
   updatedAt?: Date | null
+}
+
+export interface Event {
+  id: string
+  name: string
+  isActive: boolean
+  createdAt?: string | Date
+  updatedAt?: string | Date
+  _count?: {
+    participations: number
+    feedbacks: number
+  }
 }
 
 export interface User {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { MessageSquareText, Star, TrendingUp, Users2, UserRound } from 'lucide-react'
+import { MessageSquareText, Star, TrendingUp, Users2, UserRound, Bot } from 'lucide-react'
 
 import { Button, Card, CardContent, CardHeader, CardTitle, StatCard, Badge } from '@devclub/ui'
 
@@ -8,6 +8,8 @@ import {
   attendanceLabels,
   consumptionFormatLabels,
   highlightLabels,
+  favoriteProjectLabels,
+  aiAgentRatingLabels,
   transformationLabels,
   devclubStatusLabels,
   obstacleLabels,
@@ -97,6 +99,14 @@ export function FeedbackResults({ users, onOpenIndividual }: FeedbackResultsProp
     [withFeedback]
   )
 
+  // % que curtiu o agente de IA (adorei + gostei) — métrica da decisão manter/tirar.
+  const aiAgentLiked = useMemo(() => {
+    const rated = withFeedback.filter(u => u.eventFeedback?.aiAgentRating)
+    if (rated.length === 0) return { pct: null as number | null, answered: 0 }
+    const liked = rated.filter(u => ['loved', 'liked'].includes(u.eventFeedback?.aiAgentRating ?? '')).length
+    return { pct: Math.round((liked / rated.length) * 100), answered: rated.length }
+  }, [withFeedback])
+
   const improvements = useMemo(
     () =>
       withFeedback
@@ -137,11 +147,17 @@ export function FeedbackResults({ users, onOpenIndividual }: FeedbackResultsProp
       {view === 'resumo' ? (
         <>
           {/* Cards de topo */}
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
             <StatCard label="Respostas" value={total} icon={<Users2 />} />
             <StatCard label="NPS médio (0-10)" value={npsAvgText} icon={<Star />} variant="glow" />
             <StatCard label="NPS score" value={npsScoreText} icon={<TrendingUp />} />
             <StatCard label="Vão / já no DevClub" value={willJoin} icon={<UserRound />} />
+            <StatCard
+              label="Curtiram o agente de IA"
+              value={aiAgentLiked.pct !== null ? `${aiAgentLiked.pct}%` : '—'}
+              icon={<Bot />}
+              variant="glow"
+            />
           </div>
 
           {/* NPS agrupado */}
@@ -156,6 +172,16 @@ export function FeedbackResults({ users, onOpenIndividual }: FeedbackResultsProp
               <Bar label="Detratores (0-6)" count={nps.detractors} total={nps.answered} />
             </CardContent>
           </Card>
+
+          {/* Projetos: agente de IA vs programação (decisão manter/tirar) */}
+          {(() => {
+            const a = distribution(withFeedback, 'favoriteProject', favoriteProjectLabels)
+            return <QuestionBlock title="Projeto que mais gostou (IA vs programação)" rows={a.rows} total={a.answered} />
+          })()}
+          {(() => {
+            const a = distribution(withFeedback, 'aiAgentRating', aiAgentRatingLabels)
+            return <QuestionBlock title="O que achou do agente de IA" rows={a.rows} total={a.answered} />
+          })()}
 
           {/* Perguntas de escolha única */}
           {(() => {
