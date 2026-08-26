@@ -154,6 +154,26 @@ export function AdminDashboard() {
     }
   }
 
+  const handleDeactivateEvent = async (): Promise<void> => {
+    if (!selectedEventId) return
+    if (!window.confirm('Encerrar as participações deste evento? O link para de aceitar respostas.')) return
+    setLoadingEvent(true)
+    try {
+      const response = await quizAdminAPI(`/admin/events/${selectedEventId}/deactivate`, {
+        method: 'PATCH',
+        headers: authHeader,
+      })
+      if (response.status === 200) {
+        await handleQueryEvents()
+        ToastifyDisplay({ toastType: 'success', message: 'Evento desativado. Participações encerradas.' })()
+      }
+    } catch (error) {
+      ToastifyDisplay({ toastType: 'error', message: 'Erro ao desativar o evento.' })()
+    } finally {
+      setLoadingEvent(false)
+    }
+  }
+
   const exportToXLSX = (): void => {
     const worksheet = XLSX.utils.json_to_sheet(
       filteredUsers.map((user, index) => {
@@ -269,7 +289,12 @@ export function AdminDashboard() {
             </select>
 
             {selectedEvent?.isActive ? (
-              <Badge variant="brand" size="sm">Ativo</Badge>
+              <>
+                <Badge variant="brand" size="sm">Ativo</Badge>
+                <Button variant="outline" size="sm" loading={loadingEvent} onClick={handleDeactivateEvent}>
+                  Encerrar
+                </Button>
+              </>
             ) : selectedEvent ? (
               <Button variant="outline" size="sm" loading={loadingEvent} onClick={handleActivateEvent}>
                 <CalendarCheck className="size-4" /> Ativar

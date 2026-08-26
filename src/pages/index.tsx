@@ -18,6 +18,7 @@ interface EventInfo {
   id: string
   name: string
   slug: string
+  isActive: boolean
 }
 
 function Home() {
@@ -57,6 +58,10 @@ function Home() {
   const handleNavigate = (): void => {
     if (!event) {
       alert(eventError || 'Nenhum evento disponível no momento.')
+      return
+    }
+    if (!event.isActive) {
+      alert('As participações deste evento foram encerradas.')
       return
     }
     if (isPolicyChecked) {
@@ -127,6 +132,11 @@ function Home() {
         )}
         {eventError && (
           <p className="text-error-fg text-copy-sm mt-2">{eventError}</p>
+        )}
+        {event && !event.isActive && (
+          <div className="mt-3 rounded-lg border border-error-line bg-error-bg px-4 py-3">
+            <p className="text-error-fg text-copy-sm font-semibold">🔒 As participações deste evento foram encerradas.</p>
+          </div>
         )}
 
         <p className="text-fg-subtle mt-3 text-copy md:text-copy-lg">Seja muito bem-vindo ao <b className="text-fg font-semibold">Quiz DevClub.</b></p>
@@ -218,7 +228,7 @@ function Home() {
               size="lg"
               className="w-full md:w-1/2"
               type="button"
-              disabled={!isPolicyChecked || !event}
+              disabled={!isPolicyChecked || !event || !event.isActive}
             >
               Prosseguir
             </Button>
