@@ -28,12 +28,15 @@ export interface Event {
   slug: string
   isActive: boolean
   isTemplate?: boolean
+  // Ausente em respostas antigas = 'quiz'.
+  type?: 'quiz' | 'diploma'
   createdAt?: string | Date
   updatedAt?: string | Date
   _count?: {
     participations: number
     feedbacks: number
     questions?: number
+    diplomaSubmissions?: number
   }
 }
 

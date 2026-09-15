@@ -4,6 +4,7 @@ import Home from '../../pages/index'
 import { Form } from '../../pages/public/form'
 import { AdminLogin } from '../../pages/admin/login'
 import { PrivacyPolicy } from '../../pages/public/policy'
+import { DiplomaPage } from '../../pages/public/diploma'
 
 import { NotFound } from '../../pages/NotFound'
 
@@ -12,6 +13,7 @@ export function AuthRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/e/:slug" element={<Home />} />
+      <Route path="/d/:slug" element={<DiplomaPage />} />
       <Route path="/preencher" element={<Form />} />
 
       <Route path="/admin/login" element={<AdminLogin />} />

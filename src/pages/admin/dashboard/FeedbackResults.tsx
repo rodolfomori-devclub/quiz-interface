@@ -28,7 +28,7 @@ interface BarRow {
 }
 
 /** Barra horizontal de distribuição (rótulo + contagem + %). */
-function Bar({ label, count, total }: { label: string; count: number; total: number }) {
+export function Bar({ label, count, total }: { label: string; count: number; total: number }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0
   return (
     <div className="flex flex-col gap-1">
@@ -46,7 +46,7 @@ function Bar({ label, count, total }: { label: string; count: number; total: num
 }
 
 /** Bloco de uma pergunta agregada. */
-function QuestionBlock({ title, rows, total }: { title: string; rows: BarRow[]; total: number }) {
+export function QuestionBlock({ title, rows, total }: { title: string; rows: BarRow[]; total: number }) {
   return (
     <Card>
       <CardHeader>

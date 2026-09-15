@@ -4,6 +4,8 @@ import { Routes, Route } from 'react-router-dom'
 import { Quiz } from '../../pages/private/quiz'
 import { QuizResponse } from '../../pages/private/quiz-response'
 import { EventFeedback } from '../../pages/private/feedback'
+import { DiplomaPage } from '../../pages/public/diploma'
+import { PrivacyPolicy } from '../../pages/public/policy'
 
 import { NotFound } from '../../pages/NotFound'
 
@@ -31,6 +33,9 @@ export function AppRoutes() {
       <Route path="/quiz" element={<Quiz />} />
       <Route path="/resultado" element={<QuizResponse />} />
       <Route path="/e/:slug" element={<EventLinkReset />} />
+      {/* Públicas: funcionam com a sessão do quiz aberta, sem tocar nela. */}
+      <Route path="/d/:slug" element={<DiplomaPage />} />
+      <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -19,6 +19,7 @@ interface EventInfo {
   name: string
   slug: string
   isActive: boolean
+  type: 'quiz' | 'diploma'
 }
 
 function Home() {
@@ -39,6 +40,11 @@ function Home() {
         const res = await quizUserAPI(url, { method: 'GET' })
         if (cancelled) return
         const ev: EventInfo = res.data
+        // Link /e/ de um evento diploma: vai para o fluxo próprio ANTES de gravar as chaves do quiz.
+        if (ev.type === 'diploma') {
+          navigate('/d/' + ev.slug, { replace: true })
+          return
+        }
         setEvent(ev)
         setEventError(null)
         localStorage.setItem(STORAGE_KEYS.eventId, ev.id)

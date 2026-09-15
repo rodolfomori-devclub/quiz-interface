@@ -38,4 +38,13 @@ function logoutOn401(api: AxiosInstance, keys: string[]) {
 logoutOn401(quizUserAPI, [STORAGE_KEYS.accessToken, STORAGE_KEYS.user])
 logoutOn401(quizAdminAPI, [STORAGE_KEYS.adminAccessToken, STORAGE_KEYS.admin])
 
-export { quizUserAPI, quizAdminAPI }
+// Fluxo do diploma: instância própria e SEM logoutOn401. O participante não tem token,
+// e um 401 aqui nunca pode derrubar a sessão do quiz (ou do admin) aberta no mesmo navegador.
+const diplomaAPI = axios.create({
+  baseURL: import.meta.env.VITE_USER_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+export { quizUserAPI, quizAdminAPI, diplomaAPI }

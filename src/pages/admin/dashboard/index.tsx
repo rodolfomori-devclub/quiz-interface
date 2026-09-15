@@ -8,10 +8,10 @@ import { AdminPrivateHeader } from "../../../components/AdminPrivateHeader"
 import { feedbackToReadable } from "../../../utils/eventFeedback"
 import { FeedbackResults } from "./FeedbackResults"
 import { QuestionsEditor } from "./QuestionsEditor"
+import { EventBar } from './EventBar'
+import { DiplomaPanel } from './diploma/DiplomaPanel'
 
 import {
-  Button,
-  Badge,
   IconButton,
   Input,
   StatCard,
@@ -30,17 +30,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@devclub/ui"
 
 import {
-  FileSpreadsheet,
   Send,
   Copy,
   Users,
-  Plus,
-  CalendarCheck,
-  Link2,
 } from "lucide-react"
 
 import * as XLSX from 'xlsx'
@@ -63,23 +58,10 @@ export function AdminDashboard() {
   const [showModal, setShowModal] = useState<string>('#0')
   const [copied, setCopied] = useState<boolean>(false)
 
-  // Gestão de eventos.
-  const [createOpen, setCreateOpen] = useState<boolean>(false)
-  const [newEventName, setNewEventName] = useState<string>('')
-  const [loadingEvent, setLoadingEvent] = useState<boolean>(false)
-
   const selectedEvent = events.find(e => e.id === selectedEventId)
+  // Evento diploma não usa leads nem abas do quiz: tudo dele fica no DiplomaPanel.
+  const isDiploma = selectedEvent?.type === 'diploma'
   const authHeader = { Authorization: `Bearer ${adminData?.token}` }
-
-  const [copiedLink, setCopiedLink] = useState<boolean>(false)
-  const eventLink = selectedEvent ? `${window.location.origin}/e/${selectedEvent.slug}` : ''
-
-  const handleCopyLink = (): void => {
-    if (!eventLink) return
-    navigator.clipboard.writeText(eventLink)
-    setCopiedLink(true)
-    setTimeout(() => setCopiedLink(false), 2000)
-  }
 
   const handleQueryEvents = async (): Promise<void> => {
     try {
@@ -112,66 +94,10 @@ export function AdminDashboard() {
     }
   }
 
-  const handleCreateEvent = async (): Promise<void> => {
-    if (!newEventName.trim()) return
-    setLoadingEvent(true)
-    try {
-      const response = await quizAdminAPI('/admin/events', {
-        method: 'POST',
-        headers: authHeader,
-        data: JSON.stringify({ name: newEventName.trim() }),
-      })
-      if (response.status === 201) {
-        setNewEventName('')
-        setCreateOpen(false)
-        await handleQueryEvents()
-        setSelectedEventId(response.data.id)
-        ToastifyDisplay({ toastType: 'success', message: 'Evento criado com sucesso.' })()
-      }
-    } catch (error) {
-      ToastifyDisplay({ toastType: 'error', message: 'Erro ao criar o evento.' })()
-    } finally {
-      setLoadingEvent(false)
-    }
-  }
-
-  const handleActivateEvent = async (): Promise<void> => {
-    if (!selectedEventId) return
-    setLoadingEvent(true)
-    try {
-      const response = await quizAdminAPI(`/admin/events/${selectedEventId}/activate`, {
-        method: 'PATCH',
-        headers: authHeader,
-      })
-      if (response.status === 200) {
-        await handleQueryEvents()
-        ToastifyDisplay({ toastType: 'success', message: 'Evento ativado com sucesso.' })()
-      }
-    } catch (error) {
-      ToastifyDisplay({ toastType: 'error', message: 'Erro ao ativar o evento.' })()
-    } finally {
-      setLoadingEvent(false)
-    }
-  }
-
-  const handleDeactivateEvent = async (): Promise<void> => {
-    if (!selectedEventId) return
-    if (!window.confirm('Encerrar as participações deste evento? O link para de aceitar respostas.')) return
-    setLoadingEvent(true)
-    try {
-      const response = await quizAdminAPI(`/admin/events/${selectedEventId}/deactivate`, {
-        method: 'PATCH',
-        headers: authHeader,
-      })
-      if (response.status === 200) {
-        await handleQueryEvents()
-        ToastifyDisplay({ toastType: 'success', message: 'Evento desativado. Participações encerradas.' })()
-      }
-    } catch (error) {
-      ToastifyDisplay({ toastType: 'error', message: 'Erro ao desativar o evento.' })()
-    } finally {
-      setLoadingEvent(false)
-    }
+  // Chamado pela EventBar depois de criar, ativar ou encerrar; `selectId` seleciona o evento criado.
+  const handleEventsChanged = async (selectId?: string): Promise<void> => {
+    await handleQueryEvents()
+    if (selectId) setSelectedEventId(selectId)
   }
 
   const exportToXLSX = (): void => {
@@ -261,10 +187,10 @@ export function AdminDashboard() {
   }, [])
 
   useEffect(() => {
-    if (selectedEventId) {
+    if (selectedEventId && !isDiploma) {
       handleQueryLeads(selectedEventId)
     }
-  }, [selectedEventId])
+  }, [selectedEventId, isDiploma])
 
   return (
     <>
@@ -273,179 +199,142 @@ export function AdminDashboard() {
 
         <div className="mx-auto mt-5 w-full max-w-5xl px-4">
           {/* Barra de eventos — dados abaixo são do evento selecionado */}
-          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface p-3">
-            <span className="text-label-sm font-medium text-fg-muted uppercase tracking-caps">Evento</span>
-            <select
-              value={selectedEventId}
-              onChange={e => setSelectedEventId(e.target.value)}
-              className="rounded-md border border-line bg-component px-3 py-2 text-copy-sm text-fg outline-none focus:border-brand"
-            >
-              {events.length === 0 && <option value="">Nenhum evento</option>}
-              {events.map(ev => (
-                <option key={ev.id} value={ev.id}>
-                  {ev.name}{ev.isActive ? ' (ativo)' : ''} · {ev._count?.participations ?? 0} leads
-                </option>
-              ))}
-            </select>
+          <EventBar
+            events={events}
+            selectedEventId={selectedEventId}
+            onSelect={setSelectedEventId}
+            token={adminData?.token}
+            onChanged={handleEventsChanged}
+            onExport={isDiploma ? undefined : exportToXLSX}
+          />
 
-            {selectedEvent?.isActive ? (
-              <>
-                <Badge variant="brand" size="sm">Ativo</Badge>
-                <Button variant="outline" size="sm" loading={loadingEvent} onClick={handleDeactivateEvent}>
-                  Encerrar
-                </Button>
-              </>
-            ) : selectedEvent ? (
-              <Button variant="outline" size="sm" loading={loadingEvent} onClick={handleActivateEvent}>
-                <CalendarCheck className="size-4" /> Ativar
-              </Button>
-            ) : null}
-
-            {selectedEvent && (
-              <Button variant="ghost" size="sm" onClick={handleCopyLink} title={eventLink}>
-                <Link2 className="size-4" /> {copiedLink ? 'Link copiado!' : 'Copiar link'}
-              </Button>
-            )}
-
-            <div className="ml-auto flex items-center gap-1">
-              <Button variant="secondary" size="sm" onClick={() => setCreateOpen(true)}>
-                <Plus className="size-4" /> Criar evento
-              </Button>
-              <IconButton
-                variant="ghost"
-                size="sm"
-                label="Exportar tabela do evento"
-                title="Exportar tabela do evento"
-                onClick={exportToXLSX}
-              >
-                <FileSpreadsheet />
-              </IconButton>
-            </div>
-          </div>
-
-          <Tabs value={menuOptions} onValueChange={(value) => handleChangeMenuType(value as MenuOptions)}>
-            <div className="flex items-center justify-between gap-4">
-              <TabsList>
-                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-                <TabsTrigger value="feedback">Pré-quiz</TabsTrigger>
-                <TabsTrigger value="Q&A">Q&A</TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="dashboard">
-              <div className="flex flex-col gap-4">
-                <StatCard
-                  label="Qtd. Total"
-                  value={filteredUsers?.length ?? 0}
-                  icon={<Users />}
-                  className="max-w-xs"
-                />
-
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="text"
-                    inputSize="sm"
-                    value={searchUser}
-                    onChange={e => setSearchUser(e.target.value)}
-                    placeholder="Pesquisar por nome de usuário..."
-                    className="w-full sm:w-80"
-                    maxLength={128}
-                    autoComplete="true"
-                  />
-
-                  {loadingFilter ?
-                    <Spinner className="size-5 text-fg-muted" />
-                    :
-                    <IconButton
-                      id="search-user-button"
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      label="Pesquisar"
-                      title="Pesquisar"
-                      onClick={handleSearch}
-                    >
-                      <Send />
-                    </IconButton>
-                  }
-                </div>
+          {selectedEvent && isDiploma ? (
+            <DiplomaPanel key={selectedEvent.id} event={selectedEvent} token={adminData?.token} />
+          ) : (
+            <Tabs value={menuOptions} onValueChange={(value) => handleChangeMenuType(value as MenuOptions)}>
+              <div className="flex items-center justify-between gap-4">
+                <TabsList>
+                  <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                  <TabsTrigger value="feedback">Pré-quiz</TabsTrigger>
+                  <TabsTrigger value="Q&A">Q&A</TabsTrigger>
+                </TabsList>
               </div>
 
-              <div className="mt-4 rounded-xl border border-line bg-surface">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>#</TableHead>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>CPF</TableHead>
-                      <TableHead>Telefone</TableHead>
-                      <TableHead>Nota QUIZ</TableHead>
-                      <TableHead>Palavras-chave</TableHead>
-                      <TableHead>Feedback</TableHead>
-                      <TableHead>Detalhes</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredUsers.map((user, index) => (
-                      <TableRow key={user.id}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell className="max-w-[280px] truncate">{user.name}</TableCell>
-                        <TableCell className="font-mono">{user.document!.slice(0, 3)}***</TableCell>
-                        <TableCell className="font-mono">{user.phone!.slice(0, 7)}****</TableCell>
-                        <TableCell className="font-mono">{user.finalGrade !== -1 ? user.finalGrade : 'Não preenchido'}</TableCell>
-                        <TableCell className="text-center">
-                          <span
-                            className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
-                            onClick={() => handleKeywordsModal(user)}
-                          >
-                            Ver
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {user.eventFeedback ? (
+              <TabsContent value="dashboard">
+                <div className="flex flex-col gap-4">
+                  <StatCard
+                    label="Qtd. Total"
+                    value={filteredUsers?.length ?? 0}
+                    icon={<Users />}
+                    className="max-w-xs"
+                  />
+
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      inputSize="sm"
+                      value={searchUser}
+                      onChange={e => setSearchUser(e.target.value)}
+                      placeholder="Pesquisar por nome de usuário..."
+                      className="w-full sm:w-80"
+                      maxLength={128}
+                      autoComplete="true"
+                    />
+
+                    {loadingFilter ?
+                      <Spinner className="size-5 text-fg-muted" />
+                      :
+                      <IconButton
+                        id="search-user-button"
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        label="Pesquisar"
+                        title="Pesquisar"
+                        onClick={handleSearch}
+                      >
+                        <Send />
+                      </IconButton>
+                    }
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-xl border border-line bg-surface">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>#</TableHead>
+                        <TableHead>Nome</TableHead>
+                        <TableHead>CPF</TableHead>
+                        <TableHead>Telefone</TableHead>
+                        <TableHead>Nota QUIZ</TableHead>
+                        <TableHead>Palavras-chave</TableHead>
+                        <TableHead>Feedback</TableHead>
+                        <TableHead>Detalhes</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredUsers.map((user, index) => (
+                        <TableRow key={user.id}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell className="max-w-[280px] truncate">{user.name}</TableCell>
+                          <TableCell className="font-mono">{user.document!.slice(0, 3)}***</TableCell>
+                          <TableCell className="font-mono">{user.phone!.slice(0, 7)}****</TableCell>
+                          <TableCell className="font-mono">{user.finalGrade !== -1 ? user.finalGrade : 'Não preenchido'}</TableCell>
+                          <TableCell className="text-center">
                             <span
                               className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
-                              onClick={() => handleFeedbackModal(user)}
+                              onClick={() => handleKeywordsModal(user)}
                             >
                               Ver
                             </span>
-                          ) : (
-                            <span className="text-fg-muted">—</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span
-                            className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
-                            onClick={() => handleModal(user)}
-                          >
-                            Ver
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </TabsContent>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {user.eventFeedback ? (
+                              <span
+                                className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
+                                onClick={() => handleFeedbackModal(user)}
+                              >
+                                Ver
+                              </span>
+                            ) : (
+                              <span className="text-fg-muted">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span
+                              className="cursor-pointer text-fg-brand hover:opacity-80 transition-opacity"
+                              onClick={() => handleModal(user)}
+                            >
+                              Ver
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
 
-            <TabsContent value="feedback">
-              <FeedbackResults users={users} onOpenIndividual={handleFeedbackModal} />
-            </TabsContent>
+              <TabsContent value="feedback">
+                <FeedbackResults users={users} onOpenIndividual={handleFeedbackModal} />
+              </TabsContent>
 
-            <TabsContent value="Q&A">
-              {selectedEventId ? (
-                <QuestionsEditor
-                  eventId={selectedEventId}
-                  token={adminData?.token}
-                  eventName={selectedEvent?.name}
-                />
-              ) : (
-                <p className="text-copy-sm text-fg-muted py-6 text-center">
-                  Selecione um evento para editar as perguntas.
-                </p>
-              )}
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="Q&A">
+                {selectedEventId ? (
+                  <QuestionsEditor
+                    eventId={selectedEventId}
+                    token={adminData?.token}
+                    eventName={selectedEvent?.name}
+                  />
+                ) : (
+                  <p className="text-copy-sm text-fg-muted py-6 text-center">
+                    Selecione um evento para editar as perguntas.
+                  </p>
+                )}
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </div>
 
@@ -522,40 +411,6 @@ export function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="font-display">Criar novo evento</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-3">
-            <p className="text-copy-sm text-fg-subtle">
-              Cada lead participa uma vez por evento. Crie um evento novo a cada semana — os anteriores ficam salvos.
-            </p>
-            <Input
-              type="text"
-              value={newEventName}
-              onChange={e => setNewEventName(e.target.value)}
-              placeholder="Ex.: Evento 12/08"
-              maxLength={80}
-              onKeyDown={e => { if (e.key === 'Enter') handleCreateEvent() }}
-            />
-          </div>
-          <DialogFooter className="mt-4">
-            <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="flex-1">
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              onClick={handleCreateEvent}
-              loading={loadingEvent}
-              disabled={!newEventName.trim()}
-              className="flex-1"
-            >
-              Criar evento
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }
